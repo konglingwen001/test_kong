@@ -1,9 +1,7 @@
 package com.example.rmd2k.guitarstudio_android;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +23,12 @@ public class MyListViewAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return NotesModel.getInstance().getBarNum();
+        return NotesModel.getInstance(this.context).getBarNum();
     }
 
     @Override
     public Object getItem(int position) {
-        return NotesModel.getInstance().getBar(position);
+        return NotesModel.getInstance(this.context).getBarNoArray().get(position);
     }
 
     @Override
@@ -40,13 +38,20 @@ public class MyListViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //View view = new GuitarNotesView(context);
+
+//        if (convertView == null) {
+//            convertView = new GuitarNotesView(context, position);
+//        }
+//        convertView.setBackgroundColor(Color.RED);
+//        return convertView;
+
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.guitar_notes_view, null);
         }
-        View guitarNoteView = convertView.findViewById(R.id.guitarNotesView);
-        guitarNoteView.setBackgroundColor(Color.RED);
+        GuitarNotesView guitarNoteView = convertView.findViewById(R.id.guitarNotesView);
+        guitarNoteView.lineNo = position;
         return convertView;
     }
+
 }

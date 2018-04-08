@@ -68,6 +68,10 @@ public class MyFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         //String[] data = { "Apple", "Banana", "Orange", "Watermelon", "Pear", "Grape", "Pineapple", "Strawberry", "Cherry", "Mango" };
+
+        NotesModel notesModel = NotesModel.getInstance(getContext());
+        notesModel.setGuitarNotesWithNotesTitle("天空之城");
+
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         ListView lstBar = view.findViewById(R.id.lstBar);
         MyListViewAdapter adapter = new MyListViewAdapter(getContext());
