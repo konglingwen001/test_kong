@@ -1,7 +1,6 @@
 package com.example.rmd2k.guitarstudio_android;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,18 +38,13 @@ public class MyListViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-//        if (convertView == null) {
-//            convertView = new GuitarNotesView(context, position);
-//        }
-//        convertView.setBackgroundColor(Color.RED);
-//        return convertView;
-
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.guitar_notes_view, null);
         }
+
         GuitarNotesView guitarNoteView = convertView.findViewById(R.id.guitarNotesView);
-        guitarNoteView.lineNo = position;
+        guitarNoteView.setLineNo(position);
         return convertView;
     }
 

@@ -103,11 +103,15 @@ class NotesModel {
         return currentEditNotePos;
     }
 
+    public void setCurrentEditPos(Map<String, Integer> currPos) {
+        currentEditNotePos = currPos;
+    }
+
     public int getBarNum() {
-        if (getBarNoArray() == null) {
+        if (getNotesSizeArray() == null) {
             return 0;
         }
-        return getBarNoArray().size();
+        return getNotesSizeArray().size();
     }
 
     public ArrayList<ArrayList> getBarNoArray() {
@@ -439,7 +443,7 @@ class NotesModel {
                 ArrayList<Float> barWidthArray = new ArrayList<>();
                 barWidthArray.add(0.0f);
                 for (int i = startBarNo; i < barNo - 1; i++) {
-                    Map resultDic = calBarSizeWithNoteNoArray(barNoArray.get(i), currentDemiquaverWidth, currentQuaverWidth, currentCrotchetaWidth, currentMinimWidth);
+                    Map resultDic = calBarSizeWithNoteNoArray(barNoArray.get(i), currentMinimWidth, currentCrotchetaWidth, currentQuaverWidth, currentDemiquaverWidth);
                     lineBarWidth += Double.parseDouble(resultDic.get(KEY_SIZEDIC_BAR_WDITH).toString());
                     barWidthArray.add(lineBarWidth);
                 }
