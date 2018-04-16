@@ -6,6 +6,8 @@ import android.util.Log;
 import android.util.Xml;
 import android.view.WindowManager;
 
+import com.example.rmd2k.guitarstudio_android.DataModel.Note;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -67,7 +69,7 @@ class NotesModel {
     public static final String TYPE_DEMIQUAVER = "16";
 
     private static Context mContext;
-    private static Map<String, Integer> currentEditNotePos;
+    private static Note currentEditNote;
 
     private Map<String, Object> rootNoteDic = null;
     private ArrayList<Map> notesSizeArray = null;
@@ -89,22 +91,23 @@ class NotesModel {
     }
 
     private static void initData() {
-        currentEditNotePos = new HashMap<>();
-        currentEditNotePos.put(KEY_CURR_BARNO, 0);
-        currentEditNotePos.put(KEY_CURR_NOTENO, 0);
-        currentEditNotePos.put(KEY_CURR_STRINGNO, 1);
+        currentEditNote = new Note(-1, -1, -1, -1, -1);
     }
 
     public Map<String, Object> getRootNoteDic() {
         return rootNoteDic;
     }
 
-    public Map<String, Integer> getCurrentEditPos() {
-        return currentEditNotePos;
+    public Note getCurrentEditPos() {
+        return currentEditNote;
     }
 
-    public void setCurrentEditPos(Map<String, Integer> currPos) {
-        currentEditNotePos = currPos;
+    public void setCurrentEditPos(Note note) {
+        currentEditNote.setBarNo(note.getBarNo());
+        currentEditNote.setNoteNo(note.getNoteNo());
+        currentEditNote.setFretNo(note.getFretNo());
+        currentEditNote.setStringNo(note.getStringNo());
+        currentEditNote.setPlayType(note.getPlayType());
     }
 
     public int getBarNum() {
@@ -188,13 +191,13 @@ class NotesModel {
     }
 
     public void removeBar() {
-        int barNo = currentEditNotePos.get(KEY_CURR_BARNO);
+        int barNo = currentEditNote.getBarNo();
         ArrayList barNoArray = getBarNoArray();
 
         if (barNo == barNoArray.size() - 1) {
-            currentEditNotePos.put(KEY_CURR_BARNO, barNo - 1);
-            currentEditNotePos.put(KEY_CURR_NOTENO, 0);
-            currentEditNotePos.put(KEY_CURR_STRINGNO, 1);
+            currentEditNote.setBarNo(barNo - 1);
+            currentEditNote.setNoteNo(0);
+            currentEditNote.setStringNo(1);
         }
 
         barNoArray.remove(barNo);
@@ -499,9 +502,9 @@ class NotesModel {
     public void setNoteFret(int fretNo) {
 
         // 获取音符编辑框所在的位置，包括小节序号、音符序号、吉他弦号
-        int barNo = currentEditNotePos.get(KEY_CURR_BARNO);
-        int noteNo = currentEditNotePos.get(KEY_CURR_NOTENO);
-        int stringNo = currentEditNotePos.get(KEY_CURR_STRINGNO);
+        int barNo = currentEditNote.getBarNo();
+        int noteNo = currentEditNote.getNoteNo();
+        int stringNo = currentEditNote.getStringNo();
 
         // -------------------------------------------------------------------------------------------------------START
         // 修改音符前判断，如果所修改的音符位置该小节最后一个音符位置，并且该小节音符不满时，在该小节最后添加一个空占位音符，用于选中编辑
@@ -567,8 +570,8 @@ class NotesModel {
 
     public void removeBlankNote() {
         // 获取音符编辑框所在的位置，包括小节序号、音符序号、吉他弦号
-        int barNo = currentEditNotePos.get(KEY_CURR_BARNO);
-        int noteNo = currentEditNotePos.get(KEY_CURR_NOTENO);
+        int barNo = currentEditNote.getBarNo();
+        int noteNo = currentEditNote.getNoteNo();
 
         ArrayList notesArray = (ArrayList)getNotesArray(barNo, noteNo).get(KEY_NOTE_ARRAY);
         Map note = (Map)notesArray.get(0);
