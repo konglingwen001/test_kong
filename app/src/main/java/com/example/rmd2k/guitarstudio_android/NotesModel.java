@@ -32,8 +32,8 @@ import java.util.Stack;
 
 class NotesModel {
 
-    public static final float NOTE_SIZE = 50;
-    public static final float LINE_WIDTH = 50;
+    public static final float NOTE_SIZE = 15;
+    public static final float LINE_WIDTH = NOTE_SIZE;
 
     private static final float MINIM_WIDTH = NOTE_SIZE * 1.5f * 1.5f * 1.5f;
     private static final float CROTCHETA_WIDTH = NOTE_SIZE * 1.5f * 1.5f;
@@ -70,6 +70,36 @@ class NotesModel {
     private static void initData() {
         currentEditNote = new Note("-1", "-1", "-1", "-1", "-1");
     }
+
+    public int px2dp(float pxValue) {
+        final float scale =  mContext.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
+
+    public int dp2px(float dipValue) {
+        final float scale = mContext.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * scale + 0.5f);
+    }
+
+    public float getNoteSize() {
+        return dp2px(NOTE_SIZE);
+    }
+    public float getLineWidth() {
+        return dp2px(LINE_WIDTH);
+    }
+    public float getMinimWidth() {
+        return dp2px(MINIM_WIDTH);
+    }
+    public float getCrotchetaWidth() {
+        return dp2px(CROTCHETA_WIDTH);
+    }
+    public float getQuaverWidth() {
+        return dp2px(QUAVER_WIDTH);
+    }
+    public float getDemiquaverWidth() {
+        return dp2px(DEMIQUAVER_WIDTH);
+    }
+
 
     public GuitarNotes getRootNoteDic() {
         return rootNoteDic;
@@ -498,16 +528,16 @@ class NotesModel {
 
         WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         assert wm != null;
-        float guitarNotesWidth = wm.getDefaultDisplay().getWidth() - 100;
+        float guitarNotesWidth = wm.getDefaultDisplay().getWidth() - getLineWidth() * 2;
 
-        BarSize barSize = null;
+        BarSize barSize;
         boolean isFirstBarInLine = true;
         int startBarNo = 0;         // 每行第一小节的barNo
         float lineBarWidth = 0;     // 行所有小节总宽度
         ArrayList<BarNoData> barNoArray = getBarNoArray();
         notesSizeArray.clear();
         for (int barNo = 0; barNo < barNoArray.size(); barNo++) {
-            barSize = calBarSizeWithNoteNoArray(barNoArray.get(barNo), MINIM_WIDTH, CROTCHETA_WIDTH, QUAVER_WIDTH, DEMIQUAVER_WIDTH);
+            barSize = calBarSizeWithNoteNoArray(barNoArray.get(barNo), getMinimWidth(), getCrotchetaWidth(), getQuaverWidth(), getDemiquaverWidth());
 
             minimNum = barSize.getMinimNum();
             crotchetaNum = barSize.getCrotchetaNum();
@@ -583,11 +613,11 @@ class NotesModel {
         // 最后一行，以最小音符长度计算尺寸
 
         // 计算行小节宽度
-        ArrayList<Float> barWidthArray = new ArrayList();
+        ArrayList<Float> barWidthArray = new ArrayList<>();
         lineBarWidth = 0;
         barWidthArray.add(0.0f);
         for (int i = startBarNo; i < barNoArray.size(); i++) {
-            barSize = calBarSizeWithNoteNoArray(barNoArray.get(i), currentDemiquaverWidth, currentQuaverWidth, currentCrotchetaWidth, currentMinimWidth);
+            barSize = calBarSizeWithNoteNoArray(barNoArray.get(i), getDemiquaverWidth(), getQuaverWidth(), getCrotchetaWidth(), getMinimWidth());
             lineBarWidth += barSize.getBarWidth();
             barWidthArray.add(lineBarWidth);
         }
@@ -596,10 +626,10 @@ class NotesModel {
         LineSize lineSize = new LineSize();
         lineSize.setStartBarNo(startBarNo);
         lineSize.setBarNum(barNoArray.size() - startBarNo);
-        lineSize.setDemiquaverWidth(DEMIQUAVER_WIDTH);
-        lineSize.setQuaverWidth(QUAVER_WIDTH);
-        lineSize.setCrotchetaWidth(CROTCHETA_WIDTH);
-        lineSize.setMinimWidth(MINIM_WIDTH);
+        lineSize.setDemiquaverWidth(getDemiquaverWidth());
+        lineSize.setQuaverWidth(getQuaverWidth());
+        lineSize.setCrotchetaWidth(getCrotchetaWidth());
+        lineSize.setMinimWidth(getMinimWidth());
         lineSize.setBarWidthArray(barWidthArray);
         notesSizeArray.add(lineSize);
 

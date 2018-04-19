@@ -63,10 +63,10 @@ public class GuitarNotesView extends View implements View.OnClickListener {
     private void drawNoteLine(Canvas canvas, int lineNo) {
 
         float width = getWidth();
-        float lineStart = NotesModel.LINE_WIDTH;
-        float lineEnd = width - NotesModel.LINE_WIDTH;
-        float barStartY = NotesModel.LINE_WIDTH;
-        float offsetY = NotesModel.LINE_WIDTH;
+        float lineStart = notesModel.getLineWidth();
+        float lineEnd = width - notesModel.getLineWidth();
+        float barStartY = notesModel.getLineWidth();
+        float offsetY = notesModel.getLineWidth();
         float[] points_stringLine = {lineStart, barStartY, lineEnd, barStartY,
                 lineStart, barStartY + offsetY, lineEnd, barStartY + offsetY,
                 lineStart, barStartY + offsetY * 2, lineEnd, barStartY + offsetY * 2,
@@ -74,20 +74,20 @@ public class GuitarNotesView extends View implements View.OnClickListener {
                 lineStart, barStartY + offsetY * 4, lineEnd, barStartY + offsetY * 4,
                 lineStart, barStartY + offsetY * 5, lineEnd, barStartY + offsetY * 5};
         mPaint.setColor(Color.BLACK);
-        mPaint.setStrokeWidth(1);
+        mPaint.setStrokeWidth(notesModel.dp2px(1));
         canvas.drawLines(points_stringLine, mPaint);
 
         float barLineX = 0;
         ArrayList<Float> barWidthArray = notesModel.getNotesSizeArray().get(lineNo).getBarWidthArray();
         float[] points_barLine = new float[barWidthArray.size() * 4];
         for (int i = 0; i < barWidthArray.size(); i++) {
-            barLineX = barWidthArray.get(i) + NotesModel.LINE_WIDTH;
+            barLineX = barWidthArray.get(i) + notesModel.getLineWidth();
             points_barLine[i * 4] = barLineX;
             points_barLine[i * 4 + 1] = barStartY;
             points_barLine[i * 4 + 2] = barLineX;
             points_barLine[i * 4 + 3] = barStartY + offsetY * 5;
         }
-        mPaint.setStrokeWidth(2);
+        mPaint.setStrokeWidth(notesModel.dp2px(2));
         canvas.drawLines(points_barLine, mPaint);
     }
 
@@ -97,11 +97,11 @@ public class GuitarNotesView extends View implements View.OnClickListener {
         int editNoteNo = Integer.parseInt(editNote.getNoteNo());
         int editStringNo = Integer.parseInt(editNote.getStringNo());
 
-        float barStartX = NotesModel.LINE_WIDTH;
-        float barStartY = NotesModel.LINE_WIDTH;
-        float offsetY = NotesModel.LINE_WIDTH;
+        float barStartX = notesModel.getLineWidth();
+        float barStartY = notesModel.getLineWidth();
+        float offsetY = notesModel.getLineWidth();
 
-        mPaint.setTextSize(50); //提前设置字体，用于绘制音符时计算字体大小
+        mPaint.setTextSize(notesModel.getNoteSize()); //提前设置字体，用于绘制音符时计算字体大小
 
         ArrayList<LineSize> lineSizeArray = notesModel.getNotesSizeArray();
         LineSize lineSize = lineSizeArray.get(lineNo);
@@ -140,8 +140,8 @@ public class GuitarNotesView extends View implements View.OnClickListener {
                 // 根据触摸位置所在的音符位置绘制音符编辑框
                 if (barNo == editBarNo && noteNo == editNoteNo) {
                     mPaint.setColor(Color.GREEN);
-                    noteCenterY = barStartY + (editStringNo - 1) * offsetY + 0.5f;
-                    canvas.drawRect(new RectF(noteCenterX - NotesModel.NOTE_SIZE / 2, noteCenterY- NotesModel.NOTE_SIZE / 2, noteCenterX - NotesModel.NOTE_SIZE / 2 + NotesModel.NOTE_SIZE, noteCenterY- NotesModel.NOTE_SIZE / 2 + NotesModel.NOTE_SIZE), mPaint);
+                    noteCenterY = barStartY + (editStringNo - 1) * offsetY + notesModel.dp2px(0.5f);
+                    canvas.drawRect(new RectF(noteCenterX - notesModel.getNoteSize() / 2, noteCenterY- notesModel.getNoteSize() / 2, noteCenterX - notesModel.getNoteSize() / 2 + notesModel.getNoteSize(), noteCenterY- notesModel.getNoteSize() / 2 + notesModel.getNoteSize()), mPaint);
                 }
 
                 for (int i = 0; i < notes.size(); i++) {
@@ -153,7 +153,7 @@ public class GuitarNotesView extends View implements View.OnClickListener {
                     Rect fretNoSize = new Rect();
                     mPaint.getTextBounds(fretNo, 0, fretNo.length(), fretNoSize);
 
-                    noteCenterY = barStartY + (stringNo - 1) * offsetY + 0.5f;
+                    noteCenterY = barStartY + (stringNo - 1) * offsetY + notesModel.dp2px(0.5f);
 
                     // 没有被选中的音符绘制白色背景，避免横线贯穿音符
                     if (!(barNo == editBarNo && noteNo == editNoteNo && stringNo == editStringNo)) {
@@ -200,7 +200,7 @@ public class GuitarNotesView extends View implements View.OnClickListener {
 
         // 绘制符干
         int startBarNo = lineSize.getStartBarNo();
-        float barStartX = NotesModel.NOTE_SIZE, barStartY = NotesModel.NOTE_SIZE;
+        float barStartX = notesModel.getNoteSize(), barStartY = notesModel.getNoteSize();
         float noteCenterX = 0; // 音符中心坐标
         for (int barNo = startBarNo; barNo < startBarNo + lineBarNum; barNo++) {
             // 小节开始X坐标设置
@@ -236,8 +236,8 @@ public class GuitarNotesView extends View implements View.OnClickListener {
                             if (preNoteType.equals(NotesModel.TYPE_QUAVER) || preNoteType.equals(NotesModel.TYPE_DEMIQUAVER)) {
                                 // 前一个音符为八分音符
                                 // 绘制符干连接线
-                                mPaint.setStrokeWidth(4);
-                                canvas.drawLine(noteCenterX, height - NotesModel.LINE_WIDTH, noteCenterX - currentNoteWidth, height - NotesModel.LINE_WIDTH, mPaint);
+                                mPaint.setStrokeWidth(notesModel.dp2px(2));
+                                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
                             }
                         }
                         break;
@@ -254,20 +254,20 @@ public class GuitarNotesView extends View implements View.OnClickListener {
                             if (preNoteType.equals(NotesModel.TYPE_QUAVER)) {
                                 // 前一个音符为八分音符
                                 // 绘制符干连接线
-                                mPaint.setStrokeWidth(4);
-                                canvas.drawLine(noteCenterX, height - NotesModel.LINE_WIDTH, noteCenterX - currentNoteWidth, height - NotesModel.LINE_WIDTH, mPaint);
+                                mPaint.setStrokeWidth(notesModel.dp2px(2));
+                                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
                             } else if (preNoteType.equals(NotesModel.TYPE_DEMIQUAVER)) {
-                                mPaint.setStrokeWidth(4);
-                                canvas.drawLine(noteCenterX, height - NotesModel.LINE_WIDTH, noteCenterX - currentNoteWidth, height - NotesModel.LINE_WIDTH, mPaint);
-                                canvas.drawLine(noteCenterX, height - NotesModel.LINE_WIDTH * 1.5f, noteCenterX - currentNoteWidth, height - NotesModel.LINE_WIDTH * 1.5f, mPaint);
+                                mPaint.setStrokeWidth(notesModel.dp2px(2));
+                                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
+                                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth() * 1.5f, noteCenterX - currentNoteWidth, height - notesModel.getLineWidth() * 1.5f, mPaint);
                             }
                         }
                         break;
                 }
 
                 // 绘制符干
-                mPaint.setStrokeWidth(2);
-                canvas.drawLine(noteCenterX, height - NotesModel.LINE_WIDTH * 3, noteCenterX, height - NotesModel.LINE_WIDTH, mPaint);
+                mPaint.setStrokeWidth(notesModel.dp2px(1));
+                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth() * 3, noteCenterX, height - notesModel.getLineWidth(), mPaint);
 
                 preNoteType = noteType;
                 if (flatSum == flatTimeTotal) {
@@ -301,8 +301,8 @@ public class GuitarNotesView extends View implements View.OnClickListener {
 
     private boolean calRect(float posX, float posY) {
         Note resultNote = new Note();
-        float barStartX = NotesModel.LINE_WIDTH;
-        float barStartY = NotesModel.LINE_WIDTH;
+        float barStartX = notesModel.getLineWidth();
+        float barStartY = notesModel.getLineWidth();
 
         if (isOutsideOfGuitarNotes(posX, posY)) {
             return false;
@@ -319,15 +319,15 @@ public class GuitarNotesView extends View implements View.OnClickListener {
         // 判断触摸位置所属的小节，i从1开始，因为barWidthArray[0] == 0
         for (int i = 1; i < barWidthArray.size(); i++) {
             float width = Float.parseFloat(barWidthArray.get(i).toString());
-            if (posX > NotesModel.LINE_WIDTH + width) {
+            if (posX > notesModel.getLineWidth() + width) {
                 barNo++;
-                barStartX = NotesModel.LINE_WIDTH + width;
+                barStartX = notesModel.getLineWidth() + width;
             } else {
                 break;
             }
         }
 
-        int stringNo = (int)((posY - barStartY + NotesModel.NOTE_SIZE / 2) / NotesModel.NOTE_SIZE) + 1;
+        int stringNo = (int)((posY - barStartY + notesModel.getNoteSize() / 2) / notesModel.getNoteSize()) + 1;
         resultNote.setStringNo(stringNo + "");
         float addPosX = barStartX;
         float currentWidth = 0;
@@ -389,14 +389,14 @@ public class GuitarNotesView extends View implements View.OnClickListener {
     private boolean isOutsideOfGuitarNotes(float posX, float posY) {
 
         // 判断X坐标是否在吉他谱内
-        if (posX < NotesModel.LINE_WIDTH || posX > this.getWidth() - NotesModel.LINE_WIDTH) {
+        if (posX < notesModel.getLineWidth() || posX > this.getWidth() - notesModel.getLineWidth()) {
             return true;
         }
 
         // 判断Y坐标是否在吉他谱内
-        if (posY < NotesModel.NOTE_SIZE / 2) {
+        if (posY < notesModel.getNoteSize() / 2) {
             return true;
-        } else if (NotesModel.NOTE_SIZE + NotesModel.NOTE_SIZE * 5 + NotesModel.NOTE_SIZE / 2 < posY) {
+        } else if (notesModel.getNoteSize() + notesModel.getNoteSize() * 5 + notesModel.getNoteSize() / 2 < posY) {
             return true;
         }
 
