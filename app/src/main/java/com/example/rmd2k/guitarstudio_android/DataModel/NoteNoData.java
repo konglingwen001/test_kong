@@ -8,19 +8,29 @@ import java.util.ArrayList;
 
 public class NoteNoData {
 
-    private int noteType;
+    private String noteNo;
+    private String noteType;
     private ArrayList<Note> noteArray;
 
-    public NoteNoData(int noteType, ArrayList<Note> noteArray) {
+    public NoteNoData(String noteType, ArrayList<Note> noteArray) {
         this.noteType = noteType;
         this.noteArray = noteArray;
     }
 
-    public int getNoteType() {
+    public NoteNoData(String noteNo, String noteType, ArrayList<Note> noteArray) {
+        this.noteNo = noteNo;
+        this.noteType = noteType;
+        this.noteArray = noteArray;
+    }
+
+    public NoteNoData() {
+    }
+
+    public String getNoteType() {
         return noteType;
     }
 
-    public void setNoteType(int noteType) {
+    public void setNoteType(String noteType) {
         this.noteType = noteType;
     }
 
@@ -30,5 +40,13 @@ public class NoteNoData {
 
     public void setNoteArray(ArrayList<Note> noteArray) {
         this.noteArray = noteArray;
+    }
+
+    public String getNoteNo() {
+        return noteNo;
+    }
+
+    public void setNoteNo(String noteNo) {
+        this.noteNo = noteNo;
     }
 }

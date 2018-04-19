@@ -8,19 +8,22 @@ import java.util.ArrayList;
 
 public class BarNoData {
 
-    private int barNo;
+    private String barNo;
     private ArrayList<NoteNoData> noteNoDataArray;
 
-    public BarNoData(int barNo, ArrayList<NoteNoData> noteNoArray) {
+    public BarNoData(String barNo, ArrayList<NoteNoData> noteNoArray) {
         this.barNo = barNo;
         this.noteNoDataArray = noteNoArray;
     }
 
-    public int getBarNo() {
+    public BarNoData() {
+    }
+
+    public String getBarNo() {
         return barNo;
     }
 
-    public void setBarNo(int barNo) {
+    public void setBarNo(String barNo) {
         this.barNo = barNo;
     }
 

@@ -6,13 +6,13 @@ package com.example.rmd2k.guitarstudio_android.DataModel;
 
 public class Note {
 
-    private int barNo;
-    private int noteNo;
-    private int stringNo;
-    private int fretNo;
-    private int playType;
+    private String barNo;
+    private String noteNo;
+    private String stringNo;
+    private String fretNo;
+    private String playType;
 
-    public Note(int barNo, int noteNo, int stringNo, int fretNo, int playType) {
+    public Note(String barNo, String noteNo, String stringNo, String fretNo, String playType) {
         this.barNo = barNo;
         this.noteNo = noteNo;
         this.stringNo = stringNo;
@@ -20,43 +20,61 @@ public class Note {
         this.playType = playType;
     }
 
-    public int getStringNo() {
+    public Note() {
+    }
+
+    public String getStringNo() {
         return stringNo;
     }
 
-    public void setStringNo(int stringNo) {
+    public void setStringNo(String stringNo) {
         this.stringNo = stringNo;
     }
 
-    public int getFretNo() {
+    public String getFretNo() {
         return fretNo;
     }
 
-    public void setFretNo(int fretNo) {
+    public void setFretNo(String fretNo) {
         this.fretNo = fretNo;
     }
 
-    public int getPlayType() {
+    public String getPlayType() {
         return playType;
     }
 
-    public void setPlayType(int playType) {
+    public void setPlayType(String playType) {
         this.playType = playType;
     }
 
-    public int getBarNo() {
+    public String getBarNo() {
         return barNo;
     }
 
-    public void setBarNo(int barNo) {
+    public void setBarNo(String barNo) {
         this.barNo = barNo;
     }
 
-    public int getNoteNo() {
+    public String getNoteNo() {
         return noteNo;
     }
 
-    public void setNoteNo(int noteNo) {
+    public void setNoteNo(String noteNo) {
         this.noteNo = noteNo;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Note note = (Note)obj;
+        if (!this.barNo.equals(note.getBarNo())) {
+            return false;
+        }
+        if (!this.noteNo.equals(note.getNoteNo())) {
+            return false;
+        }
+        if (!this.stringNo.equals(note.getStringNo())) {
+            return false;
+        }
+        return true;
     }
 }

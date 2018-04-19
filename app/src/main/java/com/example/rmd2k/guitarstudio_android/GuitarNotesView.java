@@ -11,8 +11,11 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.example.rmd2k.guitarstudio_android.DataModel.Note;
+import com.example.rmd2k.guitarstudio_android.DataModel.LineSize;
+import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -75,7 +78,7 @@ public class GuitarNotesView extends View implements View.OnClickListener {
         canvas.drawLines(points_stringLine, mPaint);
 
         float barLineX = 0;
-        ArrayList<Float> barWidthArray = (ArrayList)notesModel.getNotesSizeArray().get(lineNo).get(NotesModel.KEY_SIZEDIC_BAR_WIDTH_ARRAY);
+        ArrayList<Float> barWidthArray = notesModel.getNotesSizeArray().get(lineNo).getBarWidthArray();
         float[] points_barLine = new float[barWidthArray.size() * 4];
         for (int i = 0; i < barWidthArray.size(); i++) {
             barLineX = barWidthArray.get(i) + NotesModel.LINE_WIDTH;
@@ -89,10 +92,10 @@ public class GuitarNotesView extends View implements View.OnClickListener {
     }
 
     private void drawNotes(Canvas canvas, int lineNo) {
-        Map<String, Integer> editNotePos = notesModel.getCurrentEditPos();
-        int editBarNo = editNotePos.get(NotesModel.KEY_CURR_BARNO);
-        int editNoteNo = editNotePos.get(NotesModel.KEY_CURR_NOTENO);
-        int editStringNo = editNotePos.get(NotesModel.KEY_CURR_STRINGNO);
+        Note editNote = notesModel.getCurrentEditNote();
+        int editBarNo = Integer.parseInt(editNote.getBarNo());
+        int editNoteNo = Integer.parseInt(editNote.getNoteNo());
+        int editStringNo = Integer.parseInt(editNote.getStringNo());
 
         float barStartX = NotesModel.LINE_WIDTH;
         float barStartY = NotesModel.LINE_WIDTH;
@@ -100,37 +103,37 @@ public class GuitarNotesView extends View implements View.OnClickListener {
 
         mPaint.setTextSize(50); //提前设置字体，用于绘制音符时计算字体大小
 
-        ArrayList<Map> noteSizeArray = notesModel.getNotesSizeArray();
-        Map noteSizeDic = noteSizeArray.get(lineNo);
-        int lineBarNum = Integer.parseInt(noteSizeDic.get(NotesModel.KEY_SIZEDIC_BAR_NUM).toString());
-        ArrayList barWidthArr = (ArrayList)noteSizeDic.get(NotesModel.KEY_SIZEDIC_BAR_WIDTH_ARRAY);
+        ArrayList<LineSize> lineSizeArray = notesModel.getNotesSizeArray();
+        LineSize lineSize = lineSizeArray.get(lineNo);
+        int lineBarNum = lineSize.getBarNum();
+        ArrayList barWidthArr = lineSize.getBarWidthArray();
 
         // 绘制吉他音符
-        int startBarNo = Integer.parseInt(noteSizeDic.get(NotesModel.KEY_SIZEDIC_START_BARNO).toString());
+        int startBarNo = lineSize.getStartBarNo();
         float noteCenterX = 0, noteCenterY = 0; // 音符中心坐标
         for (int barNo = startBarNo; barNo < startBarNo + lineBarNum; barNo++) {
 
             // 小节开始X坐标设置
             noteCenterX = barStartX + Float.parseFloat(barWidthArr.get(barNo - startBarNo).toString());
 
-            ArrayList noteNoArray = notesModel.getNoteNoArray(barNo);
+            ArrayList<NoteNoData> noteNoArray = notesModel.getNoteNoArray(barNo);
             for (int noteNo = 0; noteNo < noteNoArray.size(); noteNo++) {
-                ArrayList notes = (ArrayList)((Map)noteNoArray.get(noteNo)).get(NotesModel.KEY_NOTE_ARRAY);
+                ArrayList<Note> notes = noteNoArray.get(noteNo).getNoteArray();
                 String noteType = notesModel.getNoteType(barNo, noteNo);
 
                 // 设定音符X坐标
                 switch (noteType) {
                     case NotesModel.TYPE_MINIM:
-                        noteCenterX += Double.parseDouble(noteSizeDic.get(NotesModel.KEY_SIZEDIC_MINIM_WIDTH).toString());
+                        noteCenterX += lineSize.getMinimWidth();
                         break;
                     case NotesModel.TYPE_CROTCHET:
-                        noteCenterX += Double.parseDouble(noteSizeDic.get(NotesModel.KEY_SIZEDIC_CROTCHETA_WIDTH).toString());
+                        noteCenterX += lineSize.getCrotchetaWidth();
                         break;
                     case NotesModel.TYPE_QUAVER:
-                        noteCenterX += Double.parseDouble(noteSizeDic.get(NotesModel.KEY_SIZEDIC_QUAVER_WIDTH).toString());
+                        noteCenterX += lineSize.getQuaverWidth();
                         break;
                     case NotesModel.TYPE_DEMIQUAVER:
-                        noteCenterX += Double.parseDouble(noteSizeDic.get(NotesModel.KEY_SIZEDIC_DEMIQUAVER_WIDTH).toString());
+                        noteCenterX += lineSize.getDemiquaverWidth();
                         break;
                 }
 
@@ -143,10 +146,10 @@ public class GuitarNotesView extends View implements View.OnClickListener {
 
                 for (int i = 0; i < notes.size(); i++) {
 
-                    Map note = (Map)notes.get(i);
-                    int stringNo = Integer.parseInt(note.get(NotesModel.KEY_STRING_NO).toString());
+                    Note note = notes.get(i);
+                    int stringNo = Integer.parseInt(note.getStringNo());
 
-                    String fretNo = note.get(NotesModel.KEY_FRET_NO).toString();
+                    String fretNo = note.getFretNo();
                     Rect fretNoSize = new Rect();
                     mPaint.getTextBounds(fretNo, 0, fretNo.length(), fretNoSize);
 
@@ -171,7 +174,7 @@ public class GuitarNotesView extends View implements View.OnClickListener {
 
     private void drawStem(Canvas canvas, int lineNo) {
         float flatTimeTotal = 0;
-        String flat = notesModel.getRootNoteDic().get(NotesModel.KEY_ROOT_FLAT).toString();
+        String flat = notesModel.getRootNoteDic().getFlat();
         int flatNum = Integer.parseInt(flat.split("/")[0]);
         String totalNoteType = flat.split("/")[1];
         switch (totalNoteType) {
@@ -190,13 +193,13 @@ public class GuitarNotesView extends View implements View.OnClickListener {
         }
 
         float height = this.getHeight();
-        ArrayList noteSizeArray = notesModel.getNotesSizeArray();
-        Map noteSizeDic = (Map) noteSizeArray.get(lineNo);
-        int lineBarNum = Integer.parseInt(noteSizeDic.get(NotesModel.KEY_SIZEDIC_BAR_NUM).toString());
-        ArrayList barWidthArr = (ArrayList) noteSizeDic.get(NotesModel.KEY_SIZEDIC_BAR_WIDTH_ARRAY);
+        ArrayList<LineSize> lineSizeArray = notesModel.getNotesSizeArray();
+        LineSize lineSize = lineSizeArray.get(lineNo);
+        int lineBarNum = lineSize.getBarNum();
+        ArrayList barWidthArr = lineSize.getBarWidthArray();
 
         // 绘制符干
-        int startBarNo = Integer.parseInt(noteSizeDic.get(NotesModel.KEY_SIZEDIC_START_BARNO).toString());
+        int startBarNo = lineSize.getStartBarNo();
         float barStartX = NotesModel.NOTE_SIZE, barStartY = NotesModel.NOTE_SIZE;
         float noteCenterX = 0; // 音符中心坐标
         for (int barNo = startBarNo; barNo < startBarNo + lineBarNum; barNo++) {
@@ -214,15 +217,15 @@ public class GuitarNotesView extends View implements View.OnClickListener {
                 switch (noteType) {
                     case NotesModel.TYPE_MINIM:
                         flatSum += 0.5f;
-                        noteCenterX += Float.parseFloat(noteSizeDic.get(NotesModel.KEY_SIZEDIC_MINIM_WIDTH).toString());
+                        noteCenterX += lineSize.getMinimWidth();
                         break;
                     case NotesModel.TYPE_CROTCHET:
                         flatSum += 0.25f;
-                        noteCenterX += Float.parseFloat(noteSizeDic.get(NotesModel.KEY_SIZEDIC_CROTCHETA_WIDTH).toString());
+                        noteCenterX += lineSize.getCrotchetaWidth();
                         break;
                     case NotesModel.TYPE_QUAVER:
                         flatSum += 0.125f;
-                        currentNoteWidth = Float.parseFloat(noteSizeDic.get(NotesModel.KEY_SIZEDIC_QUAVER_WIDTH).toString());
+                        currentNoteWidth = lineSize.getQuaverWidth();
                         noteCenterX += currentNoteWidth;
 
                         // 判断前一个音符种类
@@ -240,7 +243,7 @@ public class GuitarNotesView extends View implements View.OnClickListener {
                         break;
                     case NotesModel.TYPE_DEMIQUAVER:
                         flatSum += 0.0625f;
-                        currentNoteWidth = Float.parseFloat(noteSizeDic.get(NotesModel.KEY_SIZEDIC_DEMIQUAVER_WIDTH).toString());
+                        currentNoteWidth = lineSize.getDemiquaverWidth();
                         noteCenterX += currentNoteWidth;
 
                         // 判断前一个音符种类
@@ -297,7 +300,7 @@ public class GuitarNotesView extends View implements View.OnClickListener {
     }
 
     private boolean calRect(float posX, float posY) {
-        Map resultDic = new HashMap();
+        Note resultNote = new Note();
         float barStartX = NotesModel.LINE_WIDTH;
         float barStartY = NotesModel.LINE_WIDTH;
 
@@ -305,13 +308,13 @@ public class GuitarNotesView extends View implements View.OnClickListener {
             return false;
         }
 
-        Map lineSizeDic = notesModel.getNotesSizeArray().get(lineNo);
-        float minimWidth = Float.parseFloat(lineSizeDic.get(NotesModel.KEY_SIZEDIC_MINIM_WIDTH).toString());
-        float crotchetaWidth = Float.parseFloat(lineSizeDic.get(NotesModel.KEY_SIZEDIC_CROTCHETA_WIDTH).toString());
-        float quaverWidth = Float.parseFloat(lineSizeDic.get(NotesModel.KEY_SIZEDIC_QUAVER_WIDTH).toString());
-        float demiquaverWidth = Float.parseFloat(lineSizeDic.get(NotesModel.KEY_SIZEDIC_DEMIQUAVER_WIDTH).toString());
-        int barNo = Integer.parseInt(lineSizeDic.get(NotesModel.KEY_SIZEDIC_START_BARNO).toString());
-        ArrayList barWidthArray = (ArrayList)lineSizeDic.get(NotesModel.KEY_SIZEDIC_BAR_WIDTH_ARRAY);
+        LineSize lineSize = notesModel.getNotesSizeArray().get(lineNo);
+        float minimWidth = lineSize.getMinimWidth();
+        float crotchetaWidth = lineSize.getCrotchetaWidth();
+        float quaverWidth = lineSize.getQuaverWidth();
+        float demiquaverWidth = lineSize.getDemiquaverWidth();
+        int barNo = lineSize.getStartBarNo();
+        ArrayList barWidthArray = lineSize.getBarWidthArray();
 
         // 判断触摸位置所属的小节，i从1开始，因为barWidthArray[0] == 0
         for (int i = 1; i < barWidthArray.size(); i++) {
@@ -325,7 +328,7 @@ public class GuitarNotesView extends View implements View.OnClickListener {
         }
 
         int stringNo = (int)((posY - barStartY + NotesModel.NOTE_SIZE / 2) / NotesModel.NOTE_SIZE) + 1;
-        resultDic.put(NotesModel.KEY_STRING_NO, stringNo);
+        resultNote.setStringNo(stringNo + "");
         float addPosX = barStartX;
         float currentWidth = 0;
 
@@ -352,20 +355,20 @@ public class GuitarNotesView extends View implements View.OnClickListener {
             if (posX < addPosX) {
 
                 if (noteNo == 0) {
-                    resultDic.put(NotesModel.KEY_CURR_BARNO, barNo);
-                    resultDic.put(NotesModel.KEY_CURR_NOTENO, noteNo);
+                    resultNote.setBarNo(barNo + "");
+                    resultNote.setNoteNo(noteNo + "");
                 } else if (posX > addPosX - currentWidth / 2) {
-                    resultDic.put(NotesModel.KEY_CURR_BARNO, barNo);
-                    resultDic.put(NotesModel.KEY_CURR_NOTENO, noteNo);
+                    resultNote.setBarNo(barNo + "");
+                    resultNote.setNoteNo(noteNo + "");
                 } else {
-                    resultDic.put(NotesModel.KEY_CURR_BARNO, barNo);
-                    resultDic.put(NotesModel.KEY_CURR_NOTENO, noteNo - 1);
+                    resultNote.setBarNo(barNo + "");
+                    resultNote.setNoteNo((noteNo - 1) + "");
                 }
                 break;
             } else {
                 if (noteNo == noteNoArray.size() - 1) {
-                    resultDic.put(NotesModel.KEY_CURR_BARNO, barNo);
-                    resultDic.put(NotesModel.KEY_CURR_NOTENO, noteNo);
+                    resultNote.setBarNo(barNo + "");
+                    resultNote.setNoteNo(noteNo + "");
                     break;
                 }
             }
@@ -373,12 +376,12 @@ public class GuitarNotesView extends View implements View.OnClickListener {
         }
 
         // 当音符编辑框位置没有改变时，不刷新吉他谱
-        if (resultDic.equals(notesModel.getCurrentEditPos())) {
+        if (resultNote.equals(notesModel.getCurrentEditNote())) {
             return false;
         }
 
         // 更新音符编辑框位置，并刷新吉他谱
-        notesModel.setCurrentEditPos(resultDic);
+        notesModel.setCurrentEditPos(resultNote);
         return true;
 
     }

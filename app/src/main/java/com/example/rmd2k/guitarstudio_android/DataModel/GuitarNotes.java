@@ -9,14 +9,17 @@ import java.util.ArrayList;
 public class GuitarNotes {
 
     private String guitarNotesName;
-    private int playSpeed;
-    private int barNum;
+    private String speed;
+    private String barNum;
     private String flat;
     private ArrayList<BarNoData> barNoDataArray;
 
-    public GuitarNotes(String guitarNotesName, int playSpeed, int barNum, String flat) {
+    public GuitarNotes() {
+    }
+
+    public GuitarNotes(String guitarNotesName, String playSpeed, String barNum, String flat) {
         this.guitarNotesName = guitarNotesName;
-        this.playSpeed = playSpeed;
+        this.speed = playSpeed;
         this.barNum = barNum;
         this.flat = flat;
     }
@@ -29,19 +32,19 @@ public class GuitarNotes {
         this.guitarNotesName = guitarNotesName;
     }
 
-    public int getPlaySpeed() {
-        return playSpeed;
+    public String getSpeed() {
+        return speed;
     }
 
-    public void setPlaySpeed(int playSpeed) {
-        this.playSpeed = playSpeed;
+    public void setSpeed(String speed) {
+        this.speed = speed;
     }
 
-    public int getBarNum() {
+    public String getBarNum() {
         return barNum;
     }
 
-    public void setBarNum(int barNum) {
+    public void setBarNum(String barNum) {
         this.barNum = barNum;
     }
 
