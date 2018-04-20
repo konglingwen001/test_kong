@@ -1,4 +1,4 @@
-package com.example.rmd2k.guitarstudio_android;
+package com.example.rmd2k.guitarstudio_android.DataModel;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -6,23 +6,14 @@ import android.util.Log;
 import android.util.Xml;
 import android.view.WindowManager;
 
-import com.example.rmd2k.guitarstudio_android.DataModel.BarNoData;
-import com.example.rmd2k.guitarstudio_android.DataModel.BarSize;
-import com.example.rmd2k.guitarstudio_android.DataModel.GuitarNotes;
-import com.example.rmd2k.guitarstudio_android.DataModel.Note;
-import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
-import com.example.rmd2k.guitarstudio_android.DataModel.LineSize;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -30,7 +21,7 @@ import java.util.Stack;
  * Created by CHT1HTSH3236 on 2018/3/21.
  */
 
-class NotesModel {
+public class NotesModel {
 
     public static final float NOTE_SIZE = 15;
     public static final float LINE_WIDTH = NOTE_SIZE;
@@ -53,7 +44,7 @@ class NotesModel {
 
     private static NotesModel ourInstance = null;
 
-    static NotesModel getInstance(Context context) {
+    public static NotesModel getInstance(Context context) {
         if (ourInstance == null) {
             ourInstance = new NotesModel();
             mContext = context;

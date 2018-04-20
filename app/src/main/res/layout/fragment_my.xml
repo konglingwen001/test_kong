@@ -2,12 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.rmd2k.guitarstudio_android.MyFragment">
+    tools:context="com.example.rmd2k.guitarstudio_android.MyZone.MyFragment">
 
     <ListView
-        android:id="@+id/lstBar"
-        android:layout_marginTop="50dp"
+        android:id="@+id/lstGuitarNotes"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp" />
 
 </RelativeLayout>

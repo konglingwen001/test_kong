@@ -1,28 +1,24 @@
-package com.example.rmd2k.guitarstudio_android;
+package com.example.rmd2k.guitarstudio_android.Musiclibrary;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
+import com.example.rmd2k.guitarstudio_android.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MyFragment.OnFragmentInteractionListener} interface
+ * {@link MusicLibraryFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MyFragment#newInstance} factory method to
+ * Use the {@link MusicLibraryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MyFragment extends Fragment {
+public class MusicLibraryFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -34,7 +30,7 @@ public class MyFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public MyFragment() {
+    public MusicLibraryFragment() {
         // Required empty public constructor
     }
 
@@ -44,11 +40,11 @@ public class MyFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MyFragment.
+     * @return A new instance of fragment MusicLibraryFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MyFragment newInstance(String param1, String param2) {
-        MyFragment fragment = new MyFragment();
+    public static MusicLibraryFragment newInstance(String param1, String param2) {
+        MusicLibraryFragment fragment = new MusicLibraryFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,29 +55,35 @@ public class MyFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //String[] data = { "Apple", "Banana", "Orange", "Watermelon", "Pear", "Grape", "Pineapple", "Strawberry", "Cherry", "Mango" };
+        return inflater.inflate(R.layout.fragment_music_library, container, false);
+    }
 
-        NotesModel notesModel = NotesModel.getInstance(getContext());
-        notesModel.setGuitarNotesWithNotesTitle("天空之城");
-
-        View view = inflater.inflate(R.layout.fragment_my, container, false);
-        ListView lstBar = view.findViewById(R.id.lstBar);
-        MyListViewAdapter adapter = new MyListViewAdapter(getContext());
-        lstBar.setAdapter(adapter);
-        return view;
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override

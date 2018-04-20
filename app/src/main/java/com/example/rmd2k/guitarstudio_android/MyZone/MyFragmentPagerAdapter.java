@@ -1,4 +1,4 @@
-package com.example.rmd2k.guitarstudio_android;
+package com.example.rmd2k.guitarstudio_android.MyZone;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

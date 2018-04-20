@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.rmd2k.guitarstudio_android.GuitarNotesView
+    <com.example.rmd2k.guitarstudio_android.MyZone.GuitarNotesViewCell
         android:id="@+id/guitarNotesView"
         android:layout_width="match_parent"
         android:layout_height="150dp" />

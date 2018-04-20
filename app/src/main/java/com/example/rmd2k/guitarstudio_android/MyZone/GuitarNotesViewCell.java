@@ -1,4 +1,4 @@
-package com.example.rmd2k.guitarstudio_android;
+package com.example.rmd2k.guitarstudio_android.MyZone;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,27 +14,27 @@ import android.view.View;
 import com.example.rmd2k.guitarstudio_android.DataModel.Note;
 import com.example.rmd2k.guitarstudio_android.DataModel.LineSize;
 import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
+import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Created by CHT1HTSH3236 on 2018/3/20.
  */
 
-public class GuitarNotesView extends View implements View.OnClickListener {
+public class GuitarNotesViewCell extends View implements View.OnClickListener {
 
     private int lineNo;
     private NotesModel notesModel;
     private Paint mPaint;
 
-    public GuitarNotesView(Context context) {
+    public GuitarNotesViewCell(Context context) {
         super(context);
         notesModel = NotesModel.getInstance(context);
         mPaint = new Paint();
     }
 
-    public GuitarNotesView(Context context, @Nullable AttributeSet attrs) {
+    public GuitarNotesViewCell(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         notesModel = NotesModel.getInstance(context);
         mPaint = new Paint();
