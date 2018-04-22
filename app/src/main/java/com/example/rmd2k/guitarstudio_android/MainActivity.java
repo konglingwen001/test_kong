@@ -1,5 +1,6 @@
 package com.example.rmd2k.guitarstudio_android;
 
+import android.os.MessageQueue;
 import android.support.v4.app.Fragment;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -38,11 +39,12 @@ public class MainActivity extends AppCompatActivity {
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(new MyFragment());
         fragments.add(new MusicLibraryFragment());
-        fragments.add(new ToolsFragment());
-        fragments.add(new SettingFragment());
+        fragments.add(new MyFragment());
+        fragments.add(new MyFragment());
 
         FragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), fragments, new String[]{"我的", "乐库", "工具", "设置"});
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
     }
+
 }

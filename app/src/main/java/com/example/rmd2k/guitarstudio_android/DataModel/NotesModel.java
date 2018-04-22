@@ -59,7 +59,7 @@ public class NotesModel {
     }
 
     private static void initData() {
-        currentEditNote = new Note("-1", "-1", "-1", "-1", "-1");
+        currentEditNote = new Note("0", "0", "0", "-1", "-1");
     }
 
     public int px2dp(float pxValue) {
@@ -281,6 +281,8 @@ public class NotesModel {
                                         barNoData.setNoteNoDataArray(new ArrayList<NoteNoData>());
                                     }
                                     barNoData.getNoteNoDataArray().add(noteNoData);
+                                    noteNo = barNoData.getNoteNoDataArray().size() - 1;
+                                    noteNoData.setNoteNo(String.valueOf(noteNo));
                                     stack.push(noteNoData);
                                 } else if (object instanceof NoteNoData) {
                                     Note note = new Note();
@@ -288,6 +290,8 @@ public class NotesModel {
                                     if (noteNoData.getNoteArray() == null) {
                                         noteNoData.setNoteArray(new ArrayList<Note>());
                                     }
+                                    note.setBarNo(String.valueOf(barNo));
+                                    note.setNoteNo(String.valueOf(noteNo));
                                     noteNoData.getNoteArray().add(note);
                                     stack.push(note);
                                 }
@@ -309,6 +313,8 @@ public class NotesModel {
                                 if (rootNoteDic.getBarNoDataArray() == null) {
                                     rootNoteDic.setBarNoDataArray(new ArrayList<BarNoData>());
                                 }
+                                barNo = rootNoteDic.getBarNoDataArray().size() - 1;
+                                barNoData.setBarNo(String.valueOf(barNo));
                                 rootNoteDic.getBarNoDataArray().add(barNoData);
                                 stack.push(barNoData);
                             }
@@ -519,7 +525,8 @@ public class NotesModel {
 
         WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         assert wm != null;
-        float guitarNotesWidth = wm.getDefaultDisplay().getWidth() - getLineWidth() * 2;
+        float guitarNotesWidth = wm.getDefaultDisplay().getWidth();
+        guitarNotesWidth -= getLineWidth() * 2;
 
         BarSize barSize;
         boolean isFirstBarInLine = true;

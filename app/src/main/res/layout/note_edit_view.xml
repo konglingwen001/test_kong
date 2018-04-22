@@ -1,0 +1,164 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <GridLayout
+        android:id="@+id/gridNoteType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:columnCount="4"
+        android:rowCount="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/btnMinim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:text="@string/note_minim" />
+
+        <Button
+            android:id="@+id/btnCrotcheta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:text="@string/note_crotcheta" />
+
+        <Button
+            android:id="@+id/btnQuaver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:text="@string/note_quaver" />
+
+        <Button
+            android:id="@+id/btnDemiquaver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:text="@string/note_demiquaver" />
+    </GridLayout>
+
+
+    <GridLayout
+        android:id="@+id/gridBtnNum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:columnCount="3"
+        android:rowCount="4"
+        app:layout_constraintTop_toBottomOf="@id/gridNoteType"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btnNum1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num1"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num2"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num3"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num4"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num5"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num6"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num7"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num8"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num9"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_cancel"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnNum0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_num0"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+        <Button
+            android:id="@+id/btnOK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_OK"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1" />
+
+    </GridLayout>
+
+</android.support.constraint.ConstraintLayout>

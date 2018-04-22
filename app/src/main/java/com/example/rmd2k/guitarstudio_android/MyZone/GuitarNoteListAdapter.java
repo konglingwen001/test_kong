@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.example.rmd2k.guitarstudio_android.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by CHT1HTSH3236 on 2018/4/20.
@@ -19,7 +20,7 @@ public class GuitarNoteListAdapter extends BaseAdapter {
 
     Context mContext;
     private LayoutInflater mInflater;
-    ArrayList<String> guitarNoteList = new ArrayList<>();
+    ArrayList<String> guitarNoteList;
 
     public GuitarNoteListAdapter(Context context, ArrayList<String> guitarNoteNames) {
         this.mContext = context;
@@ -29,7 +30,7 @@ public class GuitarNoteListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return guitarNoteList.size();
+        return guitarNoteList.size() + 1;
     }
 
     @Override
@@ -48,7 +49,11 @@ public class GuitarNoteListAdapter extends BaseAdapter {
             convertView = mInflater.inflate(android.R.layout.simple_list_item_1, null);
         }
         TextView tvName = convertView.findViewById(android.R.id.text1);
-        tvName.setText(guitarNoteList.get(position));
+        if (position == guitarNoteList.size()) {
+            tvName.setText("Add GuitarNote");
+        } else {
+            tvName.setText(guitarNoteList.get(position));
+        }
         return convertView;
     }
 }

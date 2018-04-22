@@ -6,15 +6,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.Note;
 import com.example.rmd2k.guitarstudio_android.DataModel.LineSize;
 import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
+import com.example.rmd2k.guitarstudio_android.MyZone.GuitarNoteViewActivity.MyHandler;
 
 import java.util.ArrayList;
 
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 public class GuitarNotesViewCell extends View implements View.OnClickListener {
 
     private int lineNo;
+    private MyHandler myHandler;
     private NotesModel notesModel;
     private Paint mPaint;
 
@@ -48,6 +52,14 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         invalidate(); //调用onDraw()刷新界面
     }
 
+    public void setMyHandler(MyHandler myHandler) {
+        this.myHandler = myHandler;
+    }
+
+    public void refresh() {
+        invalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
 
@@ -62,7 +74,8 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
 
     private void drawNoteLine(Canvas canvas, int lineNo) {
 
-        float width = getWidth();
+        WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
+        float width = wm.getDefaultDisplay().getWidth();
         float lineStart = notesModel.getLineWidth();
         float lineEnd = width - notesModel.getLineWidth();
         float barStartY = notesModel.getLineWidth();
@@ -157,7 +170,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
 
                     // 没有被选中的音符绘制白色背景，避免横线贯穿音符
                     if (!(barNo == editBarNo && noteNo == editNoteNo && stringNo == editStringNo)) {
-                        mPaint.setColor(Color.GREEN);
+                        mPaint.setColor(Color.WHITE);
                         canvas.drawRect(new RectF(noteCenterX - fretNoSize.width() / 2, noteCenterY - fretNoSize.height() / 2, noteCenterX + fretNoSize.width() / 2, noteCenterY + fretNoSize.height() / 2), mPaint);
                     }
 
@@ -287,16 +300,48 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float posX = event.getRawX();
-        float posY = event.getRawY();
+        boolean isMove = false;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                //System.out.println("ACtion down");
+                return true;
+            case MotionEvent.ACTION_UP:
+                if (!isMove) {
+                    //System.out.println("ACtion up");
+                    locateEditPos(event);
+                }
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                isMove = true;
+                return true;
+            default:
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
 
-        System.out.println("PosX:" + posX + "   PosY:" + posY);
+    private void locateEditPos(MotionEvent event) {
+        float posX = event.getX();
+        float posY = event.getY();
+
+        int oldLineNo = 0;
+        Note note = notesModel.getCurrentEditNote();
+        ArrayList<LineSize> notesSizeArray = notesModel.getNotesSizeArray();
+        for (int i = 0; i < notesSizeArray.size(); i++) {
+            LineSize lineSize = notesSizeArray.get(i);
+            if (lineSize.getStartBarNo() > Integer.parseInt(note.getBarNo())) {
+                oldLineNo = i;
+                break;
+            }
+        }
+        Message message = new Message();
+        message.what = oldLineNo;
+        myHandler.sendMessage(message);
 
         boolean result = calRect(posX, posY);
         if (result) {
-
+            invalidate();
         }
-        return super.onTouchEvent(event);
     }
 
     private boolean calRect(float posX, float posY) {

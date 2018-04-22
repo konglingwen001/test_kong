@@ -1,6 +1,7 @@
 package com.example.rmd2k.guitarstudio_android.MyZone;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,15 +9,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,8 +30,10 @@ import java.util.Arrays;
  * create an instance of this fragment.
  */
 public class MyFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
+    Context mContext;
+    ArrayList<String> guitarNoteNames;
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -38,9 +43,7 @@ public class MyFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public MyFragment() {
-        // Required empty public constructor
-    }
+    public MyFragment(){}
 
     /**
      * Use this factory method to create a new instance of
@@ -74,11 +77,37 @@ public class MyFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         ListView lstGuitarNotes = view.findViewById(R.id.lstGuitarNotes);
         AssetManager manager = getContext().getAssets();
-        ArrayList<String> guitarNoteNames = (ArrayList<String>)Arrays.asList(manager.getLocales());
+        guitarNoteNames = new ArrayList<>();
+        try {
+            String[] files = manager.list("");
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].endsWith(".plist")) {
+                    guitarNoteNames.add(files[i]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        lstGuitarNotes.setOnItemClickListener(itemClickListener);
         GuitarNoteListAdapter adapter = new GuitarNoteListAdapter(getContext(), guitarNoteNames);
         lstGuitarNotes.setAdapter(adapter);
+
         return view;
     }
+
+    AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Intent intent = new Intent();
+            if (position < guitarNoteNames.size()) {
+                intent.setClass(getActivity(), GuitarNoteViewActivity.class);
+            } else {
+                intent.setClass(getActivity(), GuitarNoteViewActivity.class);
+            }
+            startActivity(intent);
+        }
+    };
 
     @Override
     public void onAttach(Context context) {

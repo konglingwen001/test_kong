@@ -3,4 +3,23 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="note_minim">2</string>
+    <string name="note_crotcheta">4</string>
+    <string name="note_quaver">8</string>
+    <string name="note_demiquaver">16</string>
+
+    <string name="btn_num1">1</string>
+    <string name="btn_num2">2</string>
+    <string name="btn_num3">3</string>
+    <string name="btn_num4">4</string>
+    <string name="btn_num5">5</string>
+    <string name="btn_num6">6</string>
+    <string name="btn_num7">7</string>
+    <string name="btn_num8">8</string>
+    <string name="btn_num9">9</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_num0">0</string>
+    <string name="btn_OK">OK</string>
+
 </resources>
