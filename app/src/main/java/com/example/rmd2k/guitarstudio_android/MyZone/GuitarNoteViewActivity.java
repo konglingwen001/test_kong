@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
@@ -20,7 +21,6 @@ import com.example.rmd2k.guitarstudio_android.R;
 import java.lang.ref.WeakReference;
 
 public class GuitarNoteViewActivity extends AppCompatActivity {
-
 
     ListView lstGuitarNoteView;
     NoteEditView noteEditView;
@@ -95,5 +95,51 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void changeNoteType(View view) {
+        String tag = view.getTag().toString();
+        switch (tag) {
+            case "2":
+                System.out.println("note_minim");
+                break;
+            case "4":
+                System.out.println("note_crotcheta");
+                break;
+            case "8":
+                System.out.println("note_quaver");
+                break;
+            case "16":
+                System.out.println("note_demiquaver");
+                break;
+        }
+    }
+
+    public void changeFretNo(View view) {
+        int pushNum = Integer.parseInt(view.getTag().toString());
+    }
+
+    public void addBar(View view) {
+
+    }
+
+    public void deleteBar(View view) {
+
+    }
+
+    public void addNote(View view) {
+
+    }
+
+    public void deleteNote(View view) {
+
+    }
+
+    public void finishEdit(View view) {
+
+    }
+
+    public void cancelEdit(View view) {
+
     }
 }

@@ -21,5 +21,9 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_num0">0</string>
     <string name="btn_OK">OK</string>
+    <string name="btn_add_bar">addBar</string>
+    <string name="btn_delete_bar">deleteBar</string>
+    <string name="btn_add_note">addNote</string>
+    <string name="btn_delete_note">deleteNote</string>
 
 </resources>
