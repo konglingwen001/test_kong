@@ -12,8 +12,6 @@ import android.widget.GridLayout;
  */
 public class NoteEditView extends ConstraintLayout {
 
-    GridLayout gridNoteType;
-
     public NoteEditView(Context context) {
         super(context);
     }

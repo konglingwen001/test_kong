@@ -102,7 +102,7 @@
             android:text="@string/btn_add_bar"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:onClick="addBar"/>
+            android:onClick="addBarNo"/>
 
         <Button
             android:tag="@string/btn_num4"
@@ -141,7 +141,7 @@
             android:text="@string/btn_delete_bar"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:onClick="deleteBar"/>
+            android:onClick="deleteBarNo"/>
 
         <Button
             android:tag="@string/btn_num7"
@@ -180,7 +180,7 @@
             android:text="@string/btn_add_note"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:onClick="addNote"/>
+            android:onClick="addNoteNo"/>
 
         <Button
             android:id="@+id/btnCancel"
@@ -217,7 +217,7 @@
             android:text="@string/btn_delete_note"
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
-            android:onClick="deleteNote"/>
+            android:onClick="deleteNoteNo"/>
 
     </GridLayout>
 

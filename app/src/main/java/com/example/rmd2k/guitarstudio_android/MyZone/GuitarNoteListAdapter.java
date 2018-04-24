@@ -7,10 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.example.rmd2k.guitarstudio_android.R;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by CHT1HTSH3236 on 2018/4/20.
@@ -18,9 +15,9 @@ import java.util.List;
 
 public class GuitarNoteListAdapter extends BaseAdapter {
 
-    Context mContext;
+    private Context mContext;
     private LayoutInflater mInflater;
-    ArrayList<String> guitarNoteList;
+    private ArrayList<String> guitarNoteList;
 
     public GuitarNoteListAdapter(Context context, ArrayList<String> guitarNoteNames) {
         this.mContext = context;

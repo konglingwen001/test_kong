@@ -8,17 +8,10 @@ import java.util.ArrayList;
 
 public class NoteNoData {
 
-    private String noteNo;
     private String noteType;
     private ArrayList<Note> noteArray;
 
     public NoteNoData(String noteType, ArrayList<Note> noteArray) {
-        this.noteType = noteType;
-        this.noteArray = noteArray;
-    }
-
-    public NoteNoData(String noteNo, String noteType, ArrayList<Note> noteArray) {
-        this.noteNo = noteNo;
         this.noteType = noteType;
         this.noteArray = noteArray;
     }
@@ -42,11 +35,4 @@ public class NoteNoData {
         this.noteArray = noteArray;
     }
 
-    public String getNoteNo() {
-        return noteNo;
-    }
-
-    public void setNoteNo(String noteNo) {
-        this.noteNo = noteNo;
-    }
 }

@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.example.rmd2k.guitarstudio_android.DataModel.EditNoteInfo;
 import com.example.rmd2k.guitarstudio_android.DataModel.Note;
 import com.example.rmd2k.guitarstudio_android.DataModel.LineSize;
 import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
@@ -105,10 +106,10 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
     }
 
     private void drawNotes(Canvas canvas, int lineNo) {
-        Note editNote = notesModel.getCurrentEditNote();
-        int editBarNo = Integer.parseInt(editNote.getBarNo());
-        int editNoteNo = Integer.parseInt(editNote.getNoteNo());
-        int editStringNo = Integer.parseInt(editNote.getStringNo());
+        EditNoteInfo editNote = notesModel.getCurrentEditNote();
+        int editBarNo = editNote.getBarNo();
+        int editNoteNo = editNote.getNoteNo();
+        int editStringNo = editNote.getStringNo();
 
         float barStartX = notesModel.getLineWidth();
         float barStartY = notesModel.getLineWidth();
@@ -325,11 +326,11 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         float posY = event.getY();
 
         int oldLineNo = 0;
-        Note note = notesModel.getCurrentEditNote();
+        EditNoteInfo note = notesModel.getCurrentEditNote();
         ArrayList<LineSize> notesSizeArray = notesModel.getNotesSizeArray();
         for (int i = 0; i < notesSizeArray.size(); i++) {
             LineSize lineSize = notesSizeArray.get(i);
-            if (lineSize.getStartBarNo() > Integer.parseInt(note.getBarNo())) {
+            if (lineSize.getStartBarNo() > note.getBarNo()) {
                 oldLineNo = i;
                 break;
             }
@@ -345,7 +346,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
     }
 
     private boolean calRect(float posX, float posY) {
-        Note resultNote = new Note();
+        EditNoteInfo resultNote = new EditNoteInfo();
         float barStartX = notesModel.getLineWidth();
         float barStartY = notesModel.getLineWidth();
 
@@ -373,7 +374,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         }
 
         int stringNo = (int)((posY - barStartY + notesModel.getNoteSize() / 2) / notesModel.getNoteSize()) + 1;
-        resultNote.setStringNo(stringNo + "");
+        resultNote.setStringNo(stringNo);
         float addPosX = barStartX;
         float currentWidth = 0;
 
@@ -400,24 +401,23 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
             if (posX < addPosX) {
 
                 if (noteNo == 0) {
-                    resultNote.setBarNo(barNo + "");
-                    resultNote.setNoteNo(noteNo + "");
+                    resultNote.setBarNo(barNo);
+                    resultNote.setNoteNo(noteNo);
                 } else if (posX > addPosX - currentWidth / 2) {
-                    resultNote.setBarNo(barNo + "");
-                    resultNote.setNoteNo(noteNo + "");
+                    resultNote.setBarNo(barNo);
+                    resultNote.setNoteNo(noteNo);
                 } else {
-                    resultNote.setBarNo(barNo + "");
-                    resultNote.setNoteNo((noteNo - 1) + "");
+                    resultNote.setBarNo(barNo);
+                    resultNote.setNoteNo(noteNo - 1);
                 }
                 break;
             } else {
                 if (noteNo == noteNoArray.size() - 1) {
-                    resultNote.setBarNo(barNo + "");
-                    resultNote.setNoteNo(noteNo + "");
+                    resultNote.setBarNo(barNo);
+                    resultNote.setNoteNo(noteNo);
                     break;
                 }
             }
-
         }
 
         // 当音符编辑框位置没有改变时，不刷新吉他谱

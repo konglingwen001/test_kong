@@ -37,7 +37,7 @@ public class NotesModel {
     public static final String TYPE_DEMIQUAVER = "16";
 
     private static Context mContext;
-    private static Note currentEditNote;
+    private static EditNoteInfo currentEditNote;
 
     private GuitarNotes rootNoteDic = null;
     private ArrayList<LineSize> notesSizeArray = null;
@@ -59,7 +59,7 @@ public class NotesModel {
     }
 
     private static void initData() {
-        currentEditNote = new Note("0", "0", "0", "-1", "-1");
+        currentEditNote = new EditNoteInfo(0, 0, 0, -1, -1);
     }
 
     public int px2dp(float pxValue) {
@@ -96,11 +96,11 @@ public class NotesModel {
         return rootNoteDic;
     }
 
-    public Note getCurrentEditNote() {
+    public EditNoteInfo getCurrentEditNote() {
         return currentEditNote;
     }
 
-    public void setCurrentEditPos(Note note) {
+    public void setCurrentEditPos(EditNoteInfo note) {
         currentEditNote.setBarNo(note.getBarNo());
         currentEditNote.setNoteNo(note.getNoteNo());
         currentEditNote.setFretNo(note.getFretNo());
@@ -193,13 +193,13 @@ public class NotesModel {
     }
 
     public void removeBar() {
-        int barNo = Integer.parseInt(currentEditNote.getBarNo());
+        int barNo = currentEditNote.getBarNo();
         ArrayList barNoArray = getBarNoArray();
 
         if (barNo == barNoArray.size() - 1) {
-            currentEditNote.setBarNo(String.valueOf(barNo - 1));
-            currentEditNote.setNoteNo(String.valueOf(0));
-            currentEditNote.setStringNo(String.valueOf(1));
+            currentEditNote.setBarNo(barNo - 1);
+            currentEditNote.setNoteNo(0);
+            currentEditNote.setStringNo(1);
         }
 
         barNoArray.remove(barNo);
@@ -237,24 +237,22 @@ public class NotesModel {
         System.out.println("over");
     }
 
-    private void addBarNoData(BarNoData barNoData) {
+    public void addBarNoData(BarNoData barNoData) {
         rootNoteDic.getBarNoDataArray().add(barNoData);
     }
 
-    private void addNoteNoData(int barNo, NoteNoData noteNoData) {
-        rootNoteDic.getBarNoDataArray().get(barNo).getNoteNoDataArray().add(noteNoData);
+    public void addBarNoDataAtIndex(int index, BarNoData barNoData) {
+        rootNoteDic.getBarNoDataArray().add(index, barNoData);
     }
 
-    private void addNote(int barNo, int noteNo, Note note) {
-        rootNoteDic.getBarNoDataArray().get(barNo).getNoteNoDataArray().get(barNo).getNoteArray().add(note);
+    public void addNoteNoData(int barNo, NoteNoData noteNoData) {
+        rootNoteDic.getBarNoDataArray().get(barNo).getNoteNoDataArray().add(noteNoData);
     }
 
     private Map<String, Object> parsePlistToMap(String path) {
         Stack<Object> stack = new Stack<>();
         AssetManager manager = mContext.getAssets();
         String key_t = "";
-        int barNo = 0;
-        int noteNo = 0;
         try {
             //InputStream in = manager.open("music.plist");
             InputStream in = manager.open("天空之城.plist");
@@ -281,8 +279,6 @@ public class NotesModel {
                                         barNoData.setNoteNoDataArray(new ArrayList<NoteNoData>());
                                     }
                                     barNoData.getNoteNoDataArray().add(noteNoData);
-                                    noteNo = barNoData.getNoteNoDataArray().size() - 1;
-                                    noteNoData.setNoteNo(String.valueOf(noteNo));
                                     stack.push(noteNoData);
                                 } else if (object instanceof NoteNoData) {
                                     Note note = new Note();
@@ -290,8 +286,6 @@ public class NotesModel {
                                     if (noteNoData.getNoteArray() == null) {
                                         noteNoData.setNoteArray(new ArrayList<Note>());
                                     }
-                                    note.setBarNo(String.valueOf(barNo));
-                                    note.setNoteNo(String.valueOf(noteNo));
                                     noteNoData.getNoteArray().add(note);
                                     stack.push(note);
                                 }
@@ -313,8 +307,6 @@ public class NotesModel {
                                 if (rootNoteDic.getBarNoDataArray() == null) {
                                     rootNoteDic.setBarNoDataArray(new ArrayList<BarNoData>());
                                 }
-                                barNo = rootNoteDic.getBarNoDataArray().size() - 1;
-                                barNoData.setBarNo(String.valueOf(barNo));
                                 rootNoteDic.getBarNoDataArray().add(barNoData);
                                 stack.push(barNoData);
                             }
@@ -636,9 +628,9 @@ public class NotesModel {
     public void setNoteFret(int fretNo) {
 
         // 获取音符编辑框所在的位置，包括小节序号、音符序号、吉他弦号
-        int barNo = Integer.parseInt(currentEditNote.getBarNo());
-        int noteNo = Integer.parseInt(currentEditNote.getNoteNo());
-        int stringNo = Integer.parseInt(currentEditNote.getStringNo());
+        int barNo = currentEditNote.getBarNo();
+        int noteNo = currentEditNote.getNoteNo();
+        int stringNo = currentEditNote.getStringNo();
 
         // -------------------------------------------------------------------------------------------------------START
         // 修改音符前判断，如果所修改的音符位置该小节最后一个音符位置，并且该小节音符不满时，在该小节最后添加一个空占位音符，用于选中编辑
@@ -704,8 +696,8 @@ public class NotesModel {
 
     public void removeBlankNote() {
         // 获取音符编辑框所在的位置，包括小节序号、音符序号、吉他弦号
-        int barNo = Integer.parseInt(currentEditNote.getBarNo());
-        int noteNo = Integer.parseInt(currentEditNote.getNoteNo());
+        int barNo = currentEditNote.getBarNo();
+        int noteNo = currentEditNote.getNoteNo();
 
         ArrayList<Note> notesArray = getNotesArray(barNo, noteNo);
         Note note = notesArray.get(0);

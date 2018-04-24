@@ -14,11 +14,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.example.rmd2k.guitarstudio_android.DataModel.BarNoData;
+import com.example.rmd2k.guitarstudio_android.DataModel.EditNoteInfo;
+import com.example.rmd2k.guitarstudio_android.DataModel.Note;
+import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.NoteEditView;
 import com.example.rmd2k.guitarstudio_android.R;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 public class GuitarNoteViewActivity extends AppCompatActivity {
 
@@ -26,6 +31,7 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
     NoteEditView noteEditView;
     Context mContext;
     GuitarNoteViewAdapter adapter;
+    NotesModel notesModel;
     private final MyHandler myHandler = new MyHandler(this);
 
     boolean editMode = false;
@@ -37,7 +43,7 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_guitar_note_view);
 
         mContext = getApplicationContext();
-        NotesModel notesModel = NotesModel.getInstance(mContext);
+        notesModel = NotesModel.getInstance(mContext);
         notesModel.setGuitarNotesWithNotesTitle("天空之城");
         lstGuitarNoteView = findViewById(R.id.lstGuitarNoteView);
         noteEditView = findViewById(R.id.noteEditView);
@@ -119,19 +125,53 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         int pushNum = Integer.parseInt(view.getTag().toString());
     }
 
-    public void addBar(View view) {
+    public void addBarNo(View view) {
+        int barNo = notesModel.getCurrentEditNote().getBarNo();
+        BarNoData barNoData = new BarNoData();
+        ArrayList<NoteNoData> noteNoDataArrayList = new ArrayList<>();
+        barNoData.setNoteNoDataArray(noteNoDataArrayList);
+        notesModel.addBarNoDataAtIndex(barNo, barNoData);
+
+        EditNoteInfo editNoteInfo = notesModel.getCurrentEditNote();
+        editNoteInfo.setNoteNo(0);
+        editNoteInfo.setStringNo(0);
+        refreshGuitarNoteView();
+    }
+
+    public void deleteBarNo(View view) {
 
     }
 
-    public void deleteBar(View view) {
+    public void addNoteNo(View view) {
+        EditNoteInfo editNoteInfo = notesModel.getCurrentEditNote();
+        int barNo = editNoteInfo.getBarNo();
+        int noteNo = editNoteInfo.getNoteNo();
 
+        NoteNoData noteNoData = new NoteNoData();
+        noteNoData.setNoteType("4");
+        ArrayList<Note> noteArrayList = new ArrayList<>();
+        Note note = new Note();
+        note.setStringNo("-1");
+        note.setFretNo("-1");
+        note.setPlayType("Normal");
+        noteArrayList.add(note);
+        noteNoData.setNoteArray(noteArrayList);
+
+        notesModel.getNoteNoArray(barNo).add(noteNo + 1, noteNoData);
+
+        refreshGuitarNoteView();
     }
 
-    public void addNote(View view) {
+    private void addBlankNote(int barNo, int noteNo) {
 
+        Note note = new Note();
+        note.setStringNo("-1");
+        note.setFretNo("-1");
+        note.setPlayType("Normal");
+        notesModel.addNote(note, barNo, noteNo);
     }
 
-    public void deleteNote(View view) {
+    public void deleteNoteNo(View view) {
 
     }
 
@@ -141,5 +181,10 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
     public void cancelEdit(View view) {
 
+    }
+
+    private void refreshGuitarNoteView() {
+        notesModel.calNotesSize();
+        lstGuitarNoteView.invalidate();
     }
 }
