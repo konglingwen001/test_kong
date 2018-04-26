@@ -130,7 +130,8 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         BarNoData barNoData = new BarNoData();
         ArrayList<NoteNoData> noteNoDataArrayList = new ArrayList<>();
         barNoData.setNoteNoDataArray(noteNoDataArrayList);
-        notesModel.addBarNoDataAtIndex(barNo, barNoData);
+        notesModel.addBarNoDataAtIndex(barNoData, barNo);
+        addBlankNoteNo(barNo, 0);
 
         EditNoteInfo editNoteInfo = notesModel.getCurrentEditNote();
         editNoteInfo.setNoteNo(0);
@@ -147,6 +148,13 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         int barNo = editNoteInfo.getBarNo();
         int noteNo = editNoteInfo.getNoteNo();
 
+        addBlankNoteNo(barNo, noteNo);
+
+        refreshGuitarNoteView();
+    }
+
+    private void addBlankNoteNo(int barNo, int noteNo) {
+
         NoteNoData noteNoData = new NoteNoData();
         noteNoData.setNoteType("4");
         ArrayList<Note> noteArrayList = new ArrayList<>();
@@ -156,19 +164,7 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         note.setPlayType("Normal");
         noteArrayList.add(note);
         noteNoData.setNoteArray(noteArrayList);
-
-        notesModel.getNoteNoArray(barNo).add(noteNo + 1, noteNoData);
-
-        refreshGuitarNoteView();
-    }
-
-    private void addBlankNote(int barNo, int noteNo) {
-
-        Note note = new Note();
-        note.setStringNo("-1");
-        note.setFretNo("-1");
-        note.setPlayType("Normal");
-        notesModel.addNote(note, barNo, noteNo);
+        notesModel.addNoteNoDataAtIndex(noteNoData, barNo, noteNo);
     }
 
     public void deleteNoteNo(View view) {
@@ -185,6 +181,7 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
     private void refreshGuitarNoteView() {
         notesModel.calNotesSize();
-        lstGuitarNoteView.invalidate();
+        //lstGuitarNoteView.invalidate();
+        myHandler.sendEmptyMessage(0);
     }
 }

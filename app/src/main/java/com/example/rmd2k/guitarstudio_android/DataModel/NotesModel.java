@@ -241,12 +241,16 @@ public class NotesModel {
         rootNoteDic.getBarNoDataArray().add(barNoData);
     }
 
-    public void addBarNoDataAtIndex(int index, BarNoData barNoData) {
-        rootNoteDic.getBarNoDataArray().add(index, barNoData);
+    public void addBarNoDataAtIndex(BarNoData barNoData, int barNo) {
+        rootNoteDic.getBarNoDataArray().add(barNo, barNoData);
     }
 
-    public void addNoteNoData(int barNo, NoteNoData noteNoData) {
+    public void addNoteNoData(NoteNoData noteNoData, int barNo) {
         rootNoteDic.getBarNoDataArray().get(barNo).getNoteNoDataArray().add(noteNoData);
+    }
+
+    public void addNoteNoDataAtIndex(NoteNoData noteNoData, int barNo, int noteNo) {
+        rootNoteDic.getBarNoDataArray().get(barNo).getNoteNoDataArray().add(noteNo, noteNoData);
     }
 
     private Map<String, Object> parsePlistToMap(String path) {
@@ -708,7 +712,7 @@ public class NotesModel {
         }
     }
 
-    public void addNote(Note editNote, int barNo, int noteNo) {
-        getNotesArray(barNo, noteNo).add(editNote);
+    public void addNote(Note note, int barNo, int noteNo) {
+        getNotesArray(barNo, noteNo).add(note);
     }
 }
