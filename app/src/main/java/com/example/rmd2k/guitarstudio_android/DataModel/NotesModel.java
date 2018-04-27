@@ -23,6 +23,8 @@ import java.util.Stack;
 
 public class NotesModel {
 
+    private static final String TAG = "NotesModel";
+
     public static final float NOTE_SIZE = 15;
     public static final float LINE_WIDTH = NOTE_SIZE;
 
@@ -106,6 +108,14 @@ public class NotesModel {
         currentEditNote.setFretNo(note.getFretNo());
         currentEditNote.setStringNo(note.getStringNo());
         currentEditNote.setPlayType(note.getPlayType());
+    }
+
+    public void setCurrentEditPos(int barNo, int noteNo) {
+        if (currentEditNote == null) {
+            currentEditNote = new EditNoteInfo();
+        }
+        currentEditNote.setBarNo(barNo);
+        currentEditNote.setNoteNo(noteNo);
     }
 
     public int getBarNum() {
@@ -245,12 +255,41 @@ public class NotesModel {
         rootNoteDic.getBarNoDataArray().add(barNo, barNoData);
     }
 
+    public void removeBarNoData(int barNo) {
+        rootNoteDic.getBarNoDataArray().remove(barNo);
+    }
+
     public void addNoteNoData(NoteNoData noteNoData, int barNo) {
-        rootNoteDic.getBarNoDataArray().get(barNo).getNoteNoDataArray().add(noteNoData);
+        BarNoData barNoData = rootNoteDic.getBarNoDataArray().get(barNo);
+        if (barNoData == null) {
+            Log.e(TAG, "barNoData is null!");
+            return;
+        }
+        barNoData.getNoteNoDataArray().add(noteNoData);
     }
 
     public void addNoteNoDataAtIndex(NoteNoData noteNoData, int barNo, int noteNo) {
-        rootNoteDic.getBarNoDataArray().get(barNo).getNoteNoDataArray().add(noteNo, noteNoData);
+        BarNoData barNoData = rootNoteDic.getBarNoDataArray().get(barNo);
+        if (barNoData == null) {
+            Log.e(TAG, "barNoData is null!");
+            return;
+        }
+        barNoData.getNoteNoDataArray().add(noteNo, noteNoData);
+    }
+
+    public void removeNoteNoData(int barNo, int noteNo) {
+        BarNoData barNoData = rootNoteDic.getBarNoDataArray().get(barNo);
+        if (barNoData == null) {
+            Log.e(TAG, "barNoData is null!");
+            return;
+        }
+        ArrayList<NoteNoData> noteNoDataArrayList = barNoData.getNoteNoDataArray();
+        noteNoDataArrayList.remove(noteNo);
+
+        if (noteNoDataArrayList.size() == 0) {
+            removeBarNoData(barNo);
+        }
+
     }
 
     private Map<String, Object> parsePlistToMap(String path) {

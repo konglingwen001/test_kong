@@ -22,8 +22,8 @@
     <string name="btn_num0">0</string>
     <string name="btn_OK">OK</string>
     <string name="btn_add_bar">addBar</string>
-    <string name="btn_delete_bar">deleteBar</string>
+    <string name="btn_remove_bar">removeBar</string>
     <string name="btn_add_note">addNote</string>
-    <string name="btn_delete_note">deleteNote</string>
+    <string name="btn_remove_note">rmoveNote</string>
 
 </resources>

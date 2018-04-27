@@ -125,13 +125,13 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         int pushNum = Integer.parseInt(view.getTag().toString());
     }
 
-    public void addBarNo(View view) {
+    public void addBlankBarNo(View view) {
         int barNo = notesModel.getCurrentEditNote().getBarNo();
         BarNoData barNoData = new BarNoData();
         ArrayList<NoteNoData> noteNoDataArrayList = new ArrayList<>();
         barNoData.setNoteNoDataArray(noteNoDataArrayList);
-        notesModel.addBarNoDataAtIndex(barNoData, barNo);
-        addBlankNoteNo(barNo, 0);
+        notesModel.addBarNoDataAtIndex(barNoData, barNo + 1);
+        addBlankNoteNo(barNo + 1, 0);
 
         EditNoteInfo editNoteInfo = notesModel.getCurrentEditNote();
         editNoteInfo.setNoteNo(0);
@@ -139,8 +139,12 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         refreshGuitarNoteView();
     }
 
-    public void deleteBarNo(View view) {
+    public void removeBarNoData(View view) {
+        EditNoteInfo editNoteInfo = notesModel.getCurrentEditNote();
+        int barNo = editNoteInfo.getBarNo();
+        notesModel.removeBarNoData(barNo);
 
+        refreshGuitarNoteView();
     }
 
     public void addNoteNo(View view) {
@@ -148,7 +152,7 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         int barNo = editNoteInfo.getBarNo();
         int noteNo = editNoteInfo.getNoteNo();
 
-        addBlankNoteNo(barNo, noteNo);
+        addBlankNoteNo(barNo, noteNo + 1);
 
         refreshGuitarNoteView();
     }
@@ -167,8 +171,16 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         notesModel.addNoteNoDataAtIndex(noteNoData, barNo, noteNo);
     }
 
-    public void deleteNoteNo(View view) {
+    public void removeNoteNoData(View view) {
+        EditNoteInfo editNoteInfo = notesModel.getCurrentEditNote();
+        int barNo = editNoteInfo.getBarNo();
+        int noteNo = editNoteInfo.getNoteNo();
 
+        notesModel.removeNoteNoData(barNo, noteNo);
+
+        refreshGuitarNoteView();
+
+        notesModel.setCurrentEditPos(barNo, noteNo - 1);
     }
 
     public void finishEdit(View view) {
@@ -181,7 +193,6 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
     private void refreshGuitarNoteView() {
         notesModel.calNotesSize();
-        //lstGuitarNoteView.invalidate();
         myHandler.sendEmptyMessage(0);
     }
 }
