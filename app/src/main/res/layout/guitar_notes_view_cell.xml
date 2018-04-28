@@ -7,6 +7,6 @@
     <com.example.rmd2k.guitarstudio_android.MyZone.GuitarNotesViewCell
         android:id="@+id/guitarNotesViewCell"
         android:layout_width="match_parent"
-        android:layout_height="150dp" />
+        android:layout_height="150dp"/>
 
 </RelativeLayout>

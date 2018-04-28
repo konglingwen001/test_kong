@@ -1,6 +1,7 @@
 package com.example.rmd2k.guitarstudio_android.MyZone;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.example.rmd2k.guitarstudio_android.MyZone.GuitarNoteViewActivity.MyHa
  */
 
 public class GuitarNoteViewAdapter extends BaseAdapter {
+
+    private static final String TAG = "GuitarNoteViewAdapter";
 
     private Context context;
     private LayoutInflater mInflater;
@@ -37,11 +40,14 @@ public class GuitarNoteViewAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        int count = NotesModel.getInstance(this.context).getBarNum();
+        Log.d(TAG, "lineCount : " + count);
         return NotesModel.getInstance(this.context).getBarNum();
     }
 
     @Override
     public Object getItem(int position) {
+
         return NotesModel.getInstance(this.context).getBarNoArray().get(position);
     }
 

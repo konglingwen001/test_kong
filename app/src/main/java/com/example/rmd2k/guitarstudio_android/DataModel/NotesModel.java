@@ -110,12 +110,13 @@ public class NotesModel {
         currentEditNote.setPlayType(note.getPlayType());
     }
 
-    public void setCurrentEditPos(int barNo, int noteNo) {
+    public void setCurrentEditPos(int barNo, int noteNo, int stringNo) {
         if (currentEditNote == null) {
             currentEditNote = new EditNoteInfo();
         }
         currentEditNote.setBarNo(barNo);
         currentEditNote.setNoteNo(noteNo);
+        currentEditNote.setStringNo(stringNo);
     }
 
     public int getBarNum() {
@@ -256,7 +257,27 @@ public class NotesModel {
     }
 
     public void removeBarNoData(int barNo) {
-        rootNoteDic.getBarNoDataArray().remove(barNo);
+        ArrayList<BarNoData> barNoDataArrayList = rootNoteDic.getBarNoDataArray();
+        barNoDataArrayList.remove(barNo);
+        if (barNoDataArrayList.size() > 0) {
+            if (barNo == 0) {
+                setCurrentEditPos(0, 0, 1);
+            } else {
+                setCurrentEditPos(barNo - 1, 0, 1);
+            }
+        } else {
+            addBlankBarNoData(-1);
+        }
+    }
+
+    public void addBlankBarNoData(int barNo) {
+        BarNoData barNoData = new BarNoData();
+        ArrayList<NoteNoData> noteNoDataArrayList = new ArrayList<>();
+        barNoData.setNoteNoDataArray(noteNoDataArrayList);
+        addBarNoDataAtIndex(barNoData, barNo + 1);
+        addBlankNoteNoData(barNo + 1, 0);
+
+        setCurrentEditPos(barNo + 1, 0, 1);
     }
 
     public void addNoteNoData(NoteNoData noteNoData, int barNo) {
@@ -277,6 +298,19 @@ public class NotesModel {
         barNoData.getNoteNoDataArray().add(noteNo, noteNoData);
     }
 
+    public void addBlankNoteNoData(int barNo, int noteNo) {
+        NoteNoData noteNoData = new NoteNoData();
+        noteNoData.setNoteType("4");
+        ArrayList<Note> noteArrayList = new ArrayList<>();
+        Note note = new Note();
+        note.setStringNo("-1");
+        note.setFretNo("-1");
+        note.setPlayType("Normal");
+        noteArrayList.add(note);
+        noteNoData.setNoteArray(noteArrayList);
+        addNoteNoDataAtIndex(noteNoData, barNo, noteNo);
+    }
+
     public void removeNoteNoData(int barNo, int noteNo) {
         BarNoData barNoData = rootNoteDic.getBarNoDataArray().get(barNo);
         if (barNoData == null) {
@@ -287,7 +321,12 @@ public class NotesModel {
         noteNoDataArrayList.remove(noteNo);
 
         if (noteNoDataArrayList.size() == 0) {
-            removeBarNoData(barNo);
+            if (barNo > 0) {
+                removeBarNoData(barNo);
+                setCurrentEditPos(barNo - 1, 0, 1);
+            }
+        } else {
+            setCurrentEditPos(barNo, noteNo - 1, 1);
         }
 
     }
@@ -541,6 +580,18 @@ public class NotesModel {
         return notesSizeArray;
     }
 
+    public LineSize getLineSize(int lineNo) {
+        if (lineNo >= notesSizeArray.size()) {
+            Log.e(TAG, "lineNo(" + lineNo + ") is out of size(" + notesSizeArray.size() + ")");
+            return null;
+        }
+        return notesSizeArray.get(lineNo);
+    }
+
+    public ArrayList<Float> getBarWidthArray(int lineNo) {
+        return getLineSize(lineNo).getBarWidthArray();
+    }
+
     public void calNotesSize() {
 
         int minimNum = 0;           // 单个小节二分音符个数
@@ -553,15 +604,7 @@ public class NotesModel {
         int quaverSum = 0;          // 整行八分音符总数
         int demiquaverSum = 0;      // 整行十六分音符总数
 
-        float currentMinimWidth = 0;
-        float currentCrotchetaWidth = 0;
-        float currentQuaverWidth = 0;
-        float currentDemiquaverWidth = 0;
-
-        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
-        assert wm != null;
-        float guitarNotesWidth = wm.getDefaultDisplay().getWidth();
-        guitarNotesWidth -= getLineWidth() * 2;
+        float lineTotalWidth = getLineTotalWidth();
 
         BarSize barSize;
         boolean isFirstBarInLine = true;
@@ -581,7 +624,7 @@ public class NotesModel {
             lineBarWidth += barSize.getBarWidth();
 
             // 当前行所有小节宽度总和小于吉他谱宽度时，累加音符数
-            if (lineBarWidth < guitarNotesWidth) {
+            if (lineBarWidth < lineTotalWidth) {
                 minimSum += minimNum;
                 crotchetaSum += crotchetaNum;
                 quaverSum += quaverNum;
@@ -596,31 +639,7 @@ public class NotesModel {
                     quaverSum += quaverNum;
                     demiquaverSum += demiquaverNum;
                 }
-                LineSize lineSize = new LineSize();
-                lineSize.setStartBarNo(startBarNo);
-                lineSize.setBarNum(barNo - startBarNo);
-
-                // 音符个数减去最后要丢弃的一小节的音符数，重新计算音符宽度
-                currentDemiquaverWidth = guitarNotesWidth / (demiquaverSum + quaverSum * 1.5f + crotchetaSum * 1.5f * 1.5f + minimSum * 1.5f * 1.5f * 1.5f);
-                currentQuaverWidth = currentDemiquaverWidth * 1.5f;
-                currentCrotchetaWidth = currentQuaverWidth * 1.5f;
-                currentMinimWidth = currentCrotchetaWidth * 1.5f;
-                lineSize.setDemiquaverWidth(currentDemiquaverWidth);
-                lineSize.setQuaverWidth(currentQuaverWidth);
-                lineSize.setCrotchetaWidth(currentCrotchetaWidth);
-                lineSize.setMinimWidth(currentMinimWidth);
-
-                // 通过计算得到的音符宽度重新计算小节宽度，保存在数组中
-                lineBarWidth = 0;
-                ArrayList<Float> barWidthArray = new ArrayList<>();
-                barWidthArray.add(0.0f);
-                for (int i = startBarNo; i < barNo - 1; i++) {
-                    barSize = calBarSizeWithNoteNoArray(barNoArray.get(i), currentMinimWidth, currentCrotchetaWidth, currentQuaverWidth, currentDemiquaverWidth);
-                    lineBarWidth += barSize.getBarWidth();
-                    barWidthArray.add(lineBarWidth);
-                }
-                barWidthArray.add(guitarNotesWidth);
-                lineSize.setBarWidthArray(barWidthArray);
+                LineSize lineSize = calLineSize(startBarNo, barNo, minimSum, crotchetaSum, quaverSum, demiquaverSum);
                 notesSizeArray.add(lineSize);
 
                 // 重置参数
@@ -646,26 +665,51 @@ public class NotesModel {
         // 最后一行，以最小音符长度计算尺寸
 
         // 计算行小节宽度
+        LineSize lineSize = calLineSize(startBarNo, barNoArray.size(), minimSum, crotchetaSum, quaverSum, demiquaverSum);
+        notesSizeArray.add(lineSize);
+
+    }
+
+    private LineSize calLineSize(int startBarNo, int endBarNo, int minimSum, int crotchetaSum, int quaverSum, int demiquaverSum) {
+
+        float guitarNotesWidth = getLineTotalWidth();
+        ArrayList<BarNoData> barNoArray = getBarNoArray();
+
+        LineSize lineSize = new LineSize();
+        lineSize.setStartBarNo(startBarNo);
+        lineSize.setBarNum(endBarNo - startBarNo);
+
+        // 音符个数减去最后要丢弃的一小节的音符数，重新计算音符宽度
+        float currentDemiquaverWidth = guitarNotesWidth / (demiquaverSum + quaverSum * 1.5f + crotchetaSum * 1.5f * 1.5f + minimSum * 1.5f * 1.5f * 1.5f);
+        float currentQuaverWidth = currentDemiquaverWidth * 1.5f;
+        float currentCrotchetaWidth = currentQuaverWidth * 1.5f;
+        float currentMinimWidth = currentCrotchetaWidth * 1.5f;
+        lineSize.setDemiquaverWidth(currentDemiquaverWidth);
+        lineSize.setQuaverWidth(currentQuaverWidth);
+        lineSize.setCrotchetaWidth(currentCrotchetaWidth);
+        lineSize.setMinimWidth(currentMinimWidth);
+
+        // 通过计算得到的音符宽度重新计算小节宽度，保存在数组中
+        float lineBarWidth = 0;
+        BarSize barSize;
         ArrayList<Float> barWidthArray = new ArrayList<>();
-        lineBarWidth = 0;
         barWidthArray.add(0.0f);
-        for (int i = startBarNo; i < barNoArray.size(); i++) {
-            barSize = calBarSizeWithNoteNoArray(barNoArray.get(i), getDemiquaverWidth(), getQuaverWidth(), getCrotchetaWidth(), getMinimWidth());
+        for (int i = startBarNo; i < endBarNo - 1; i++) {
+            barSize = calBarSizeWithNoteNoArray(barNoArray.get(i), currentMinimWidth, currentCrotchetaWidth, currentQuaverWidth, currentDemiquaverWidth);
             lineBarWidth += barSize.getBarWidth();
             barWidthArray.add(lineBarWidth);
         }
-
-        // 保存
-        LineSize lineSize = new LineSize();
-        lineSize.setStartBarNo(startBarNo);
-        lineSize.setBarNum(barNoArray.size() - startBarNo);
-        lineSize.setDemiquaverWidth(getDemiquaverWidth());
-        lineSize.setQuaverWidth(getQuaverWidth());
-        lineSize.setCrotchetaWidth(getCrotchetaWidth());
-        lineSize.setMinimWidth(getMinimWidth());
+        barWidthArray.add(guitarNotesWidth);
         lineSize.setBarWidthArray(barWidthArray);
-        notesSizeArray.add(lineSize);
 
+        return lineSize;
+    }
+
+    public float getLineTotalWidth() {
+        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+        assert wm != null;
+        float guitarNotesWidth = wm.getDefaultDisplay().getWidth() - getLineWidth() * 2;
+        return guitarNotesWidth;
     }
 
     public void setNoteFret(int fretNo) {

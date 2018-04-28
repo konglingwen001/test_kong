@@ -64,8 +64,6 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
     @Override
     protected void onDraw(Canvas canvas) {
 
-        System.out.println("lingNo = " + lineNo);
-
         drawNoteLine(canvas, lineNo);
         drawNotes(canvas, lineNo);
         drawStem(canvas, lineNo);
@@ -92,7 +90,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         canvas.drawLines(points_stringLine, mPaint);
 
         float barLineX = 0;
-        ArrayList<Float> barWidthArray = notesModel.getNotesSizeArray().get(lineNo).getBarWidthArray();
+        ArrayList<Float> barWidthArray = notesModel.getBarWidthArray(lineNo);
         float[] points_barLine = new float[barWidthArray.size() * 4];
         for (int i = 0; i < barWidthArray.size(); i++) {
             barLineX = barWidthArray.get(i) + notesModel.getLineWidth();
@@ -354,7 +352,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
             return false;
         }
 
-        LineSize lineSize = notesModel.getNotesSizeArray().get(lineNo);
+        LineSize lineSize = notesModel.getLineSize(lineNo);
         float minimWidth = lineSize.getMinimWidth();
         float crotchetaWidth = lineSize.getCrotchetaWidth();
         float quaverWidth = lineSize.getQuaverWidth();

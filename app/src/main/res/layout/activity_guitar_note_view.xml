@@ -10,12 +10,12 @@
         android:id="@+id/lstGuitarNoteView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:divider="@null"
+        android:listSelector="@android:color/transparent"
         app:layout_constraintBottom_toTopOf="@id/noteEditView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:divider="@null"
-        android:listSelector="@android:color/transparent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.example.rmd2k.guitarstudio_android.NoteEditView
         android:id="@+id/noteEditView"

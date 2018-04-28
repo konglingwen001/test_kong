@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,6 +27,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class GuitarNoteViewActivity extends AppCompatActivity {
+
+    private static final String TAG = "GuitarNoteViewActivity";
 
     ListView lstGuitarNoteView;
     NoteEditView noteEditView;
@@ -127,15 +130,8 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
     public void addBlankBarNo(View view) {
         int barNo = notesModel.getCurrentEditNote().getBarNo();
-        BarNoData barNoData = new BarNoData();
-        ArrayList<NoteNoData> noteNoDataArrayList = new ArrayList<>();
-        barNoData.setNoteNoDataArray(noteNoDataArrayList);
-        notesModel.addBarNoDataAtIndex(barNoData, barNo + 1);
-        addBlankNoteNo(barNo + 1, 0);
+        notesModel.addBlankBarNoData(barNo);
 
-        EditNoteInfo editNoteInfo = notesModel.getCurrentEditNote();
-        editNoteInfo.setNoteNo(0);
-        editNoteInfo.setStringNo(0);
         refreshGuitarNoteView();
     }
 
@@ -152,23 +148,9 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         int barNo = editNoteInfo.getBarNo();
         int noteNo = editNoteInfo.getNoteNo();
 
-        addBlankNoteNo(barNo, noteNo + 1);
+        notesModel.addBlankNoteNoData(barNo, noteNo + 1);
 
         refreshGuitarNoteView();
-    }
-
-    private void addBlankNoteNo(int barNo, int noteNo) {
-
-        NoteNoData noteNoData = new NoteNoData();
-        noteNoData.setNoteType("4");
-        ArrayList<Note> noteArrayList = new ArrayList<>();
-        Note note = new Note();
-        note.setStringNo("-1");
-        note.setFretNo("-1");
-        note.setPlayType("Normal");
-        noteArrayList.add(note);
-        noteNoData.setNoteArray(noteArrayList);
-        notesModel.addNoteNoDataAtIndex(noteNoData, barNo, noteNo);
     }
 
     public void removeNoteNoData(View view) {
@@ -179,8 +161,6 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         notesModel.removeNoteNoData(barNo, noteNo);
 
         refreshGuitarNoteView();
-
-        notesModel.setCurrentEditPos(barNo, noteNo - 1);
     }
 
     public void finishEdit(View view) {
@@ -192,7 +172,13 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
     }
 
     private void refreshGuitarNoteView() {
+        Log.d(TAG, "before calc lineCount : " + notesModel.getNotesSizeArray().size());
         notesModel.calNotesSize();
+        Log.d(TAG, "after calc lineCount : " + notesModel.getNotesSizeArray().size());
+
+        // remove bar之后重新加载listview
+        adapter.notifyDataSetChanged();
+
         myHandler.sendEmptyMessage(0);
     }
 }
