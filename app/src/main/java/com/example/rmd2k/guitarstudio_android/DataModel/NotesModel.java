@@ -41,6 +41,7 @@ public class NotesModel {
     private static Context mContext;
     private static EditNoteInfo currentEditNote;
 
+    private GuitarNotes oldGuitarNotes = null;
     private GuitarNotes rootNoteDic = null;
     private ArrayList<LineSize> notesSizeArray = null;
 
@@ -169,6 +170,62 @@ public class NotesModel {
         return noteNoData.getNoteType();
     }
 
+    public NoteNoData getNoteNoData(int barNo, int noteNo) {
+        ArrayList<NoteNoData> noteNoDataArrayList = getNoteNoArray(barNo);
+        if (noteNoDataArrayList == null) {
+            Log.e(TAG, "noteNoDataArray is null");
+            return new NoteNoData();
+        }
+        return noteNoDataArrayList.get(noteNo);
+    }
+
+    public void changeEditNoteType(String type) {
+        int barNo = currentEditNote.getBarNo();
+        int noteNo = currentEditNote.getNoteNo();
+
+        NoteNoData noteNoData = getNoteNoData(barNo, noteNo);
+        noteNoData.setNoteType(type);
+    }
+
+    public void changeEditNoteFretNo(int fretNo) {
+
+        // 获取音符编辑框所在的位置，包括小节序号、音符序号、吉他弦号
+        int barNo = currentEditNote.getBarNo();
+        int noteNo = currentEditNote.getNoteNo();
+        int stringNo = currentEditNote.getStringNo();
+
+        // -------------------------------------------------------------------------------------------------------START
+        // 修改音符
+
+        ArrayList<Note> notesArray = getNotesArray(barNo, noteNo);
+        Note editNote = getNote(barNo, noteNo, stringNo);
+        if (editNote == null) {  // 当音符编辑框所在位置没有音符时，添加新的音符
+
+            Note mutableEditNote = new Note();
+            mutableEditNote.setStringNo(stringNo + "");
+            mutableEditNote.setFretNo(fretNo + "");
+            mutableEditNote.setPlayType(notesArray.get(0).getPlayType());
+            notesArray.add(mutableEditNote);
+            addNote(mutableEditNote, barNo, noteNo);
+
+        } else {    // 当音符编辑框所在位置有音符时，修改原有音符
+
+            int oldFretNo = Integer.parseInt(editNote.getFretNo());
+            // 当原有音符为1或2时，将原有音符乘以10再加上输入音符，结果作为新的音符
+            if (oldFretNo == 1 || oldFretNo == 2) {
+                fretNo = oldFretNo * 10 + fretNo;
+            }
+            editNote.setFretNo(fretNo + "");
+
+        }
+
+        // 如果修改位置存在空白占位音符，则删除空白占位音符
+        removeBlankNote();
+
+        // -------------------------------------------------------------------------------------------------------END
+
+    }
+
     public Note getNote(int barNo, int noteNo, int stringNo) {
         ArrayList<Note> notes = getNotesArray(barNo, noteNo);
         if (notes == null) {
@@ -243,7 +300,11 @@ public class NotesModel {
             Log.v("DEBUG", plistPath);
         }
 
-        parsePlistToMap(plistPath);
+        try {
+            parsePlistToMap(plistPath);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("over");
     }
@@ -321,17 +382,21 @@ public class NotesModel {
         noteNoDataArrayList.remove(noteNo);
 
         if (noteNoDataArrayList.size() == 0) {
+            removeBarNoData(barNo);
             if (barNo > 0) {
-                removeBarNoData(barNo);
                 setCurrentEditPos(barNo - 1, 0, 1);
+            } else {
+                setCurrentEditPos(barNo, 0, 1);
             }
         } else {
-            setCurrentEditPos(barNo, noteNo - 1, 1);
+            if (noteNo != 0) {
+                setCurrentEditPos(barNo, noteNo - 1, 1);
+            }
         }
 
     }
 
-    private Map<String, Object> parsePlistToMap(String path) {
+    private Map<String, Object> parsePlistToMap(String path) throws NoSuchMethodException, IllegalAccessException {
         Stack<Object> stack = new Stack<>();
         AssetManager manager = mContext.getAssets();
         String key_t = "";
@@ -412,108 +477,26 @@ public class NotesModel {
                 }
                 event = parser.next();
             }
-        } catch (XmlPullParserException e) {
+        } catch (XmlPullParserException | IOException | InvocationTargetException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        }
+
+        try {
+            oldGuitarNotes = rootNoteDic.clone();
+        } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-//    private Map<String, Object> parsePlistToMap(String path) {
-//        Stack<Object> stack = new Stack<>();
-//        Map tmpRootDic = null;
-//        AssetManager manager = mContext.getAssets();
-//        String key_t = "";
-//        int barNo = 0;
-//        int noteNo = 0;
-//        try {
-//            //InputStream in = manager.open("music.plist");
-//            InputStream in = manager.open("天空之城.plist");
-//            XmlPullParser parser = Xml.newPullParser();
-//            parser.setInput(in, "utf-8");
-//            int event = parser.getEventType();
-//            while (XmlPullParser.END_DOCUMENT != event) {
-//                switch (event) {
-//                    case XmlPullParser.START_DOCUMENT:
-//                        tmpRootDic = new HashMap();
-//                        break;
-//                    case XmlPullParser.START_TAG:
-//                        if (parser.getName().equals("dict")) {
-//                            if (stack.empty()) {
-//                                stack.push(tmpRootDic);
-//                            } else {
-//                                ArrayList<Object> arrayList = (ArrayList<Object>) stack.peek();
-//                                HashMap<String, Object> map = new HashMap<>();
-//                                arrayList.add(map);
-//                                stack.push(map);
-//
-//                                ArrayList<Note> noteArray = new ArrayList<>();
-//                                NoteNoData noteNoData = new NoteNoData(noteNo++, "-1", noteArray);
-//                                addNoteNoData(barNo, noteNoData);
-//                            }
-//                            break;
-//                        } else if (parser.getName().equals("key")) {
-//                            HashMap<String, Object> map = (HashMap<String, Object>)stack.peek();
-//                            key_t = parser.nextText();
-//                            map.put(key_t, "");
-//                        } else if (parser.getName().equals("string")) {
-//                            HashMap<String, Object> map = (HashMap<String, Object>)stack.peek();
-//                            map.put(key_t, parser.nextText());
-//
-//                            setDataByDic(barNo, noteNo, key_t, parser.nextText());
-//                        } else if (parser.getName().equals("integer")) {
-//                            HashMap<String, Object> map = (HashMap<String, Object>)stack.peek();
-//                            map.put(key_t, parser.nextText());
-//
-//                            setDataByDic(barNo, noteNo, key_t, parser.nextText());
-//                        } else if (parser.getName().equals("array")) {
-//
-//                            ArrayList<Object> array = new ArrayList<>();
-//
-//                            Object object_t = stack.peek();
-//                            if (object_t instanceof HashMap) {
-//                                HashMap<String, Object> map_t = (HashMap)object_t;
-//                                map_t.put(key_t, array);
-//
-//                                setDataByDic(barNo, noteNo, key_t, array);
-//                            } else if (object_t instanceof ArrayList) {
-//                                ArrayList<Object> array_t = (ArrayList)object_t;
-//                                array_t.add(array);
-//
-//                                BarNoData barNoData = new BarNoData(barNo++, (ArrayList)array);
-//                                addBarNoData(barNoData);
-//                            }
-//
-//                            stack.push(array);
-//                        }
-//                        break;
-//                    case XmlPullParser.END_TAG:
-//                        if (parser.getName().equals("array")) {
-//                            stack.pop();
-//                        } else if (parser.getName().equals("dict")) {
-//                            stack.pop();
-//                        }
-//                        break;
-//
-//                }
-//                event = parser.next();
-//            }
-//        } catch (XmlPullParserException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
-//    }
+    public boolean isNoteChanged() {
+        return oldGuitarNotes.equals(rootNoteDic);
+    }
+
+    public void saveGuitarNotes() {
+
+    }
 
     private BarSize calBarSizeWithNoteNoArray(BarNoData barNoData, float currentMinimWidth, float currentCrotchetaWidth, float currentQuaverWidth, float currentDemiquaverWidth) {
 
@@ -712,73 +695,48 @@ public class NotesModel {
         return guitarNotesWidth;
     }
 
-    public void setNoteFret(int fretNo) {
+    public float getFlatTime() {
 
-        // 获取音符编辑框所在的位置，包括小节序号、音符序号、吉他弦号
-        int barNo = currentEditNote.getBarNo();
-        int noteNo = currentEditNote.getNoteNo();
-        int stringNo = currentEditNote.getStringNo();
-
-        // -------------------------------------------------------------------------------------------------------START
-        // 修改音符前判断，如果所修改的音符位置该小节最后一个音符位置，并且该小节音符不满时，在该小节最后添加一个空占位音符，用于选中编辑
-
-        ArrayList noteNoArray = getNoteNoArray(barNo);
-
-        // 判断小节音符是否正确与完全
-        boolean barIsCorrect = checkBarStateAtBarNo(barNo);
-
-        if (noteNo == noteNoArray.size() - 1 && !barIsCorrect) {
-            // 在小节末尾添加占位空音符
-            insertBlankNoteAtBarNo(barNo);
-
-            // 重新计算吉他谱尺寸
-            calNotesSize();
+        float flatTime = 0;
+        String tempo = getRootNoteDic().getFlat();
+        String totalNoteType = tempo.split("/")[1];
+        switch (totalNoteType) {
+            case NotesModel.TYPE_MINIM:
+                flatTime = 0.5f;
+                break;
+            case NotesModel.TYPE_CROTCHET:
+                flatTime = 0.25f;
+                break;
+            case NotesModel.TYPE_QUAVER:
+                flatTime = 0.125f;
+                break;
+            case NotesModel.TYPE_DEMIQUAVER:
+                flatTime = 0.0625f;
+                break;
         }
+        return flatTime;
+    }
 
-        // -------------------------------------------------------------------------------------------------------END
-
-        // -------------------------------------------------------------------------------------------------------START
-        // 修改音符
-
-        ArrayList<Note> notesArray = getNotesArray(barNo, noteNo);
-        Note editNote = getNote(barNo, noteNo, stringNo);
-        if (editNote == null) {  // 当音符编辑框所在位置没有音符时，添加新的音符
-
-            Note mutableEditNote = new Note();
-            mutableEditNote.setStringNo(stringNo + "");
-            mutableEditNote.setFretNo(fretNo + "");
-            mutableEditNote.setPlayType(notesArray.get(0).getPlayType());
-            notesArray.add(mutableEditNote);
-            addNote(mutableEditNote, barNo, noteNo);
-
-        } else {    // 当音符编辑框所在位置有音符时，修改原有音符
-
-            int oldFretNo = Integer.parseInt(editNote.getFretNo());
-            // 当原有音符为1或2时，将原有音符乘以10再加上输入音符，结果作为新的音符
-            if (oldFretNo == 1 || oldFretNo == 2) {
-                fretNo = oldFretNo * 10 + fretNo;
-            }
-            editNote.setFretNo(fretNo + "");
-
-        }
-
-        // 如果修改位置存在空白占位音符，则删除空白占位音符
-        removeBlankNote();
-
-        // -------------------------------------------------------------------------------------------------------END
-
+    public float getFlatTimeTotal() {
+        float flatTimeTotal = 0;
+        float flatTime = getFlatTime();
+        String tempo = getRootNoteDic().getFlat();
+        int beatsPerBar = Integer.parseInt(tempo.split("/")[0]);
+        flatTimeTotal = flatTime * beatsPerBar;
+        return flatTimeTotal;
     }
 
     public boolean checkBarStateAtBarNo(int barNo) {
         double noteType = 0;
         double noteTypeSum = 0;
+        float flatTimeTotal = getFlatTimeTotal();
         ArrayList noteNoArray = getNoteNoArray(barNo);
         for (int noteNo = 0; noteNo < noteNoArray.size(); noteNo++) {
             noteType = Double.parseDouble(getNoteType(barNo, noteNo));
             noteTypeSum += 1.0f / noteType;
         }
 
-        return (noteTypeSum == 1);
+        return (noteTypeSum == flatTimeTotal);
     }
 
     public void removeBlankNote() {

@@ -1,18 +1,25 @@
 package com.example.rmd2k.guitarstudio_android.MyZone;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.BarNoData;
@@ -37,6 +44,8 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
     NotesModel notesModel;
     private final MyHandler myHandler = new MyHandler(this);
 
+    boolean isNoteChanged = false;
+
     boolean editMode = false;
     Drawable oldSelector;
 
@@ -53,9 +62,31 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         adapter = new GuitarNoteViewAdapter(mContext, myHandler);
         lstGuitarNoteView.setAdapter(adapter);
 
+        lstGuitarNoteView.setOnScrollListener(scrollListener);
+
         // 保存ListView点击效果
         oldSelector = lstGuitarNoteView.getSelector();
     }
+
+    private AbsListView.OnScrollListener scrollListener = new AbsListView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING ||
+                    scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            View my_view = lstGuitarNoteView.getChildAt(visibleItemCount - 1);
+            if (my_view == null) {
+                return;
+            }
+            int bottom = my_view.getBottom();
+            Log.d(TAG, "bottom : " + bottom);
+        }
+    };
 
     public static class MyHandler extends Handler {
         private final WeakReference<GuitarNoteViewActivity> mActivity;
@@ -73,6 +104,7 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+
         super.onResume();
     }
 
@@ -98,6 +130,27 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
                     lstGuitarNoteView.setSelector(oldSelector);
                 }
                 return true;
+            case R.id.menu_save:
+                if (notesModel.isNoteChanged()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("保存");
+                    builder.setMessage("吉他谱已更改，是否保存？");
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            notesModel.saveGuitarNotes();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+                return true;
             case android.R.id.home:
                 finish();
                 return true;
@@ -108,24 +161,16 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
     public void changeNoteType(View view) {
         String tag = view.getTag().toString();
-        switch (tag) {
-            case "2":
-                System.out.println("note_minim");
-                break;
-            case "4":
-                System.out.println("note_crotcheta");
-                break;
-            case "8":
-                System.out.println("note_quaver");
-                break;
-            case "16":
-                System.out.println("note_demiquaver");
-                break;
-        }
+        notesModel.changeEditNoteType(tag);
+
+        refreshGuitarNoteView();
     }
 
     public void changeFretNo(View view) {
         int pushNum = Integer.parseInt(view.getTag().toString());
+        notesModel.changeEditNoteFretNo(pushNum);
+
+        refreshGuitarNoteView();
     }
 
     public void addBlankBarNo(View view) {

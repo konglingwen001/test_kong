@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.example.rmd2k.guitarstudio_android.Musiclibrary.MusicLibraryFragment;
 import com.example.rmd2k.guitarstudio_android.MyZone.MyFragment;
@@ -19,6 +22,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     TabLayout tabLayout;
     ViewPager viewPager;
 
@@ -47,4 +51,21 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                Log.d(TAG, System.currentTimeMillis() + " : ACtion down");
+                return super.onTouchEvent(event);
+            case MotionEvent.ACTION_UP:
+                Log.d(TAG, System.currentTimeMillis() + " : ACtion up");
+                return super.onTouchEvent(event);
+            case MotionEvent.ACTION_MOVE:
+                Log.d(TAG, System.currentTimeMillis() + " : ACtion move");
+                return super.onTouchEvent(event);
+            default:
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
 }

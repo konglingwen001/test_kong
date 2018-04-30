@@ -25,5 +25,7 @@
     <string name="btn_remove_bar">removeBar</string>
     <string name="btn_add_note">addNote</string>
     <string name="btn_remove_note">rmoveNote</string>
+    <string name="menu_save">保存</string>
+    <string name="menu_edit">编辑</string>
 
 </resources>

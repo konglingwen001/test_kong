@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GuitarStudio_Android-master.iml" filepath="$PROJECT_DIR$/GuitarStudio_Android-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test_kong.iml" filepath="$PROJECT_DIR$/test_kong.iml" />
     </modules>
   </component>
 </project>

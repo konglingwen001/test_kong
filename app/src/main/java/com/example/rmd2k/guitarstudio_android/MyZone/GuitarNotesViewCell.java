@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
  */
 
 public class GuitarNotesViewCell extends View implements View.OnClickListener {
+
+    private static final String TAG = "GuitarNotesViewCell";
 
     private int lineNo;
     private MyHandler myHandler;
@@ -123,7 +126,10 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         // 绘制吉他音符
         int startBarNo = lineSize.getStartBarNo();
         float noteCenterX = 0, noteCenterY = 0; // 音符中心坐标
+        int noteColor;
         for (int barNo = startBarNo; barNo < startBarNo + lineBarNum; barNo++) {
+
+            noteColor = notesModel.checkBarStateAtBarNo(barNo) ? Color.BLACK : Color.RED;
 
             // 小节开始X坐标设置
             noteCenterX = barStartX + Float.parseFloat(barWidthArr.get(barNo - startBarNo).toString());
@@ -175,7 +181,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
 
                     // 绘制音符(音符为空时不绘制)
                     if (stringNo != -1 && !fretNo.equals("-1")) {
-                        mPaint.setColor(Color.BLACK);
+                        mPaint.setColor(noteColor);
                         canvas.drawText(fretNo, noteCenterX - fretNoSize.width() / 2, noteCenterY + fretNoSize.height() / 2, mPaint);
                     }
 
@@ -185,24 +191,9 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
     }
 
     private void drawStem(Canvas canvas, int lineNo) {
-        float flatTimeTotal = 0;
-        String flat = notesModel.getRootNoteDic().getFlat();
-        int flatNum = Integer.parseInt(flat.split("/")[0]);
-        String totalNoteType = flat.split("/")[1];
-        switch (totalNoteType) {
-            case NotesModel.TYPE_MINIM:
-                flatTimeTotal = 0.5f;
-                break;
-            case NotesModel.TYPE_CROTCHET:
-                flatTimeTotal = 0.25f;
-                break;
-            case NotesModel.TYPE_QUAVER:
-                flatTimeTotal = 0.125f;
-                break;
-            case NotesModel.TYPE_DEMIQUAVER:
-                flatTimeTotal = 0.0625f;
-                break;
-        }
+
+        float flatTimeTotal = notesModel.getFlatTimeTotal();
+        float flatTime = notesModel.getFlatTime();
 
         float height = this.getHeight();
         ArrayList<LineSize> lineSizeArray = notesModel.getNotesSizeArray();
@@ -214,7 +205,12 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         int startBarNo = lineSize.getStartBarNo();
         float barStartX = notesModel.getNoteSize(), barStartY = notesModel.getNoteSize();
         float noteCenterX = 0; // 音符中心坐标
+        int stemColor;
         for (int barNo = startBarNo; barNo < startBarNo + lineBarNum; barNo++) {
+
+            stemColor = notesModel.checkBarStateAtBarNo(barNo) ? Color.BLACK : Color.RED;
+            mPaint.setColor(stemColor);
+
             // 小节开始X坐标设置
             noteCenterX = barStartX + Float.parseFloat(barWidthArr.get(barNo - startBarNo).toString());
 
@@ -228,10 +224,34 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
                 // 设定符干X坐标
                 switch (noteType) {
                     case NotesModel.TYPE_MINIM:
+                        if (preNoteType.equals(NotesModel.TYPE_QUAVER)) {
+                            // 前一个音符为八分音符
+                            // 绘制符干连接线
+                            mPaint.setStrokeWidth(notesModel.dp2px(2));
+                            canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX + notesModel.getNoteSize(), height - notesModel.getLineWidth(), mPaint);
+                        } else if (preNoteType.equals(NotesModel.TYPE_DEMIQUAVER)) {
+                            // 前一个音符为十六分音符
+                            // 绘制符干连接线
+                            mPaint.setStrokeWidth(notesModel.dp2px(2));
+                            canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX + notesModel.getNoteSize(), height - notesModel.getLineWidth(), mPaint);
+                            canvas.drawLine(noteCenterX, height - notesModel.getLineWidth() * 1.5f, noteCenterX + notesModel.getNoteSize(), height - notesModel.getLineWidth() * 1.5f, mPaint);
+                        }
                         flatSum += 0.5f;
                         noteCenterX += lineSize.getMinimWidth();
                         break;
                     case NotesModel.TYPE_CROTCHET:
+                        if (preNoteType.equals(NotesModel.TYPE_QUAVER)) {
+                            // 前一个音符为八分音符
+                            // 绘制符干连接线
+                            mPaint.setStrokeWidth(notesModel.dp2px(2));
+                            canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX + notesModel.getNoteSize(), height - notesModel.getLineWidth(), mPaint);
+                        } else if (preNoteType.equals(NotesModel.TYPE_DEMIQUAVER)) {
+                            // 前一个音符为十六分音符
+                            // 绘制符干连接线
+                            mPaint.setStrokeWidth(notesModel.dp2px(2));
+                            canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX + notesModel.getNoteSize(), height - notesModel.getLineWidth(), mPaint);
+                            canvas.drawLine(noteCenterX, height - notesModel.getLineWidth() * 1.5f, noteCenterX + notesModel.getNoteSize(), height - notesModel.getLineWidth() * 1.5f, mPaint);
+                        }
                         flatSum += 0.25f;
                         noteCenterX += lineSize.getCrotchetaWidth();
                         break;
@@ -240,16 +260,18 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
                         currentNoteWidth = lineSize.getQuaverWidth();
                         noteCenterX += currentNoteWidth;
 
-                        // 判断前一个音符种类
-                        if (preNoteType.equals("")) {
-                            // 当前音符为音符的开始音符，保存
-                            preNoteType = noteType;
-                        } else {
-                            if (preNoteType.equals(NotesModel.TYPE_QUAVER) || preNoteType.equals(NotesModel.TYPE_DEMIQUAVER)) {
-                                // 前一个音符为八分音符
-                                // 绘制符干连接线
-                                mPaint.setStrokeWidth(notesModel.dp2px(2));
-                                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
+                        if (flatSum <= flatTime) {
+                            // 判断前一个音符种类
+                            if (preNoteType.equals("")) {
+                                // 当前音符为音符的开始音符，保存
+                                preNoteType = noteType;
+                            } else {
+                                if (preNoteType.equals(NotesModel.TYPE_QUAVER) || preNoteType.equals(NotesModel.TYPE_DEMIQUAVER)) {
+                                    // 前一个音符为八分音符
+                                    // 绘制符干连接线
+                                    mPaint.setStrokeWidth(notesModel.dp2px(2));
+                                    canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
+                                }
                             }
                         }
                         break;
@@ -258,20 +280,22 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
                         currentNoteWidth = lineSize.getDemiquaverWidth();
                         noteCenterX += currentNoteWidth;
 
-                        // 判断前一个音符种类
-                        if (preNoteType.equals("")) {
-                            // 当前音符为音符的开始音符，保存
-                            preNoteType = noteType;
-                        } else {
-                            if (preNoteType.equals(NotesModel.TYPE_QUAVER)) {
-                                // 前一个音符为八分音符
-                                // 绘制符干连接线
-                                mPaint.setStrokeWidth(notesModel.dp2px(2));
-                                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
-                            } else if (preNoteType.equals(NotesModel.TYPE_DEMIQUAVER)) {
-                                mPaint.setStrokeWidth(notesModel.dp2px(2));
-                                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
-                                canvas.drawLine(noteCenterX, height - notesModel.getLineWidth() * 1.5f, noteCenterX - currentNoteWidth, height - notesModel.getLineWidth() * 1.5f, mPaint);
+                        if (flatSum <= flatTime) {
+                            // 判断前一个音符种类
+                            if (preNoteType.equals("")) {
+                                // 当前音符为音符的开始音符，保存
+                                preNoteType = noteType;
+                            } else {
+                                if (preNoteType.equals(NotesModel.TYPE_QUAVER)) {
+                                    // 前一个音符为八分音符
+                                    // 绘制符干连接线
+                                    mPaint.setStrokeWidth(notesModel.dp2px(2));
+                                    canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
+                                } else if (preNoteType.equals(NotesModel.TYPE_DEMIQUAVER)) {
+                                    mPaint.setStrokeWidth(notesModel.dp2px(2));
+                                    canvas.drawLine(noteCenterX, height - notesModel.getLineWidth(), noteCenterX - currentNoteWidth, height - notesModel.getLineWidth(), mPaint);
+                                    canvas.drawLine(noteCenterX, height - notesModel.getLineWidth() * 1.5f, noteCenterX - currentNoteWidth, height - notesModel.getLineWidth() * 1.5f, mPaint);
+                                }
                             }
                         }
                         break;
@@ -282,7 +306,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
                 canvas.drawLine(noteCenterX, height - notesModel.getLineWidth() * 3, noteCenterX, height - notesModel.getLineWidth(), mPaint);
 
                 preNoteType = noteType;
-                if (flatSum == flatTimeTotal) {
+                if (flatSum == flatTime) {
                     flatSum = 0;
                     preNoteType = "";
                 }
@@ -299,19 +323,17 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        boolean isMove = false;
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //System.out.println("ACtion down");
+                Log.d(TAG, System.currentTimeMillis() + " : action down");
                 return true;
             case MotionEvent.ACTION_UP:
-                if (!isMove) {
-                    //System.out.println("ACtion up");
-                    locateEditPos(event);
-                }
+                Log.d(TAG, System.currentTimeMillis() + " : action up");
+                locateEditPos(event);
                 return true;
             case MotionEvent.ACTION_MOVE:
-                isMove = true;
+                Log.d(TAG, System.currentTimeMillis() + " : action move");
                 return true;
             default:
                 break;

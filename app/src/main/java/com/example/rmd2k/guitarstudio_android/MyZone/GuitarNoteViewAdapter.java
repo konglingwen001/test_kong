@@ -41,8 +41,8 @@ public class GuitarNoteViewAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         int count = NotesModel.getInstance(this.context).getBarNum();
-        Log.d(TAG, "lineCount : " + count);
-        return NotesModel.getInstance(this.context).getBarNum();
+        //Log.d(TAG, "lineCount : " + count);
+        return count;
     }
 
     @Override
