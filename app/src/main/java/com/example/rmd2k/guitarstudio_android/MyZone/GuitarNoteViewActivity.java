@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.BarNoData;
@@ -56,7 +57,7 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
         mContext = getApplicationContext();
         notesModel = NotesModel.getInstance(mContext);
-        notesModel.setGuitarNotesWithNotesTitle("天空之城");
+        notesModel.setGuitarNotesWithNotesTitle(getIntent().getStringExtra("GuitarNoteName"));
         lstGuitarNoteView = findViewById(R.id.lstGuitarNoteView);
         noteEditView = findViewById(R.id.noteEditView);
         adapter = new GuitarNoteViewAdapter(mContext, myHandler);
@@ -135,6 +136,9 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("保存");
                     builder.setMessage("吉他谱已更改，是否保存？");
+                    final EditText et = new EditText(mContext);
+                    et.setHint(notesModel.getGuitarNoteName());
+                    builder.setView(et);
                     builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -144,7 +148,7 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            notesModel.saveGuitarNotes();
+                            notesModel.saveGuitarNotes(et.getText().toString());
                         }
                     });
                     AlertDialog dialog = builder.create();

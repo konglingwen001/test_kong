@@ -1,5 +1,6 @@
 package com.example.rmd2k.guitarstudio_android.DataModel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
@@ -10,6 +11,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -97,6 +100,10 @@ public class NotesModel {
 
     public GuitarNotes getRootNoteDic() {
         return rootNoteDic;
+    }
+
+    public String getGuitarNoteName() {
+        return rootNoteDic.getGuitarNotesName();
     }
 
     public EditNoteInfo getCurrentEditNote() {
@@ -274,27 +281,64 @@ public class NotesModel {
         calNotesSize();
     }
 
+    public void copyAssetFilesToFileDir(Activity activity) {
+
+        FileOutputStream fos = null;
+        InputStream is = null;
+        AssetManager manager = activity.getApplicationContext().getAssets();
+
+        try {
+            String[] files = manager.list("");
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].endsWith(".plist")) {
+                    fos = activity.openFileOutput(files[i], Context.MODE_PRIVATE);
+                    is = manager.open(files[i]);
+
+                    int count = 0;
+                    byte buf[] = new byte[1024];
+                    while ((count = is.read(buf)) > 0) {
+                        fos.write(buf, 0, count);
+                    }
+                    fos.close();
+                    is.close();
+                }
+            }
+        } catch (IOException e) {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+    }
+
     /**
-     * @param notesTitle
+     * @param guitarNoteName
      */
-    public void setGuitarNotesWithNotesTitle(String notesTitle) {
-        rootNoteDic = getGuitarNotesFromGuitarNotesTitle(notesTitle);
+    public void setGuitarNotesWithNotesTitle(String guitarNoteName) {
+        rootNoteDic = getGuitarNotesFromGuitarNotesTitle(guitarNoteName);
         notesSizeArray = new ArrayList<>();
         calNotesSize();
     }
 
-    public GuitarNotes getGuitarNotesFromGuitarNotesTitle(String guitarNotesTitle) {
+    public GuitarNotes getGuitarNotesFromGuitarNotesTitle(String guitarNoteName) {
 
         if (rootNoteDic == null) {
-            loadGuitarNotes(guitarNotesTitle);
+            loadGuitarNotes(guitarNoteName);
         }
         return rootNoteDic;
 
     }
 
-    private void loadGuitarNotes(String guitarNotesTitle) {
+    private void loadGuitarNotes(String guitarNoteName) {
         String path = mContext.getFilesDir().toString();
-        String plistPath = path + "/" + guitarNotesTitle + ".plist";
+        String plistPath = path + "/" + guitarNoteName;
         File file = new File(plistPath);
         if (file.exists()) {
             Log.v("DEBUG", plistPath);
@@ -494,8 +538,84 @@ public class NotesModel {
         return oldGuitarNotes.equals(rootNoteDic);
     }
 
-    public void saveGuitarNotes() {
+    public void saveGuitarNotes(String guitarNoteName) {
 
+        parseToPlist(guitarNoteName);
+    }
+
+    public void parseToPlist(String guitarNoteName) {
+
+        int barNoDataNum = 0;
+        int noteNoDataNum = 0;
+        int noteNum = 0;
+        BarNoData barNoData;
+        NoteNoData noteNoData;
+        Note note;
+        String fileName = guitarNoteName + ".plist";
+        barNoDataNum = rootNoteDic.getBarNoDataArray().size();
+
+        FileOutputStream fos = null;
+        try {
+            fos = mContext.openFileOutput(fileName, Context.MODE_PRIVATE);
+            fos.write(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n").getBytes());
+            fos.write(("<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n").getBytes());
+            fos.write(("<plist version=\"1.0\">\n").getBytes());
+            fos.write(("<dict>\n").getBytes());
+            fos.write(("\t<key>GuitarNotesName</key>\n").getBytes());
+            fos.write(("\t<string>" + guitarNoteName + "</string>\n").getBytes());
+            fos.write(("\t<key>Speed</key>\n").getBytes());
+            fos.write(("\t<string>" + rootNoteDic.getSpeed() + "</string>\n").getBytes());
+            fos.write(("\t<key>BarNum</key>\n").getBytes());
+            fos.write(("\t<integer>" + barNoDataNum + "</integer>\n").getBytes());
+            fos.write(("\t<key>Flat</key>\n").getBytes());
+            fos.write(("\t<string>" + rootNoteDic.getFlat() + "</string>\n").getBytes());
+            fos.write(("\t<key>GuitarNotes</key>\n").getBytes());
+            fos.write(("\t<array>\n").getBytes());
+
+            for (int barNo = 0; barNo < barNoDataNum; barNo++) {
+                barNoData = rootNoteDic.getBarNoDataArray().get(barNo);
+                fos.write(("\t\t<array>\n").getBytes());
+                noteNoDataNum = barNoData.getNoteNoDataArray().size();
+                for (int noteNo = 0; noteNo < noteNoDataNum; noteNo++) {
+                    noteNoData = barNoData.getNoteNoDataArray().get(noteNo);
+                    fos.write(("\t\t\t<dict>\n").getBytes());
+                    fos.write(("\t\t\t\t<key>NoteType</key>\n").getBytes());
+                    fos.write(("\t\t\t\t<string>" + noteNoData.getNoteType() + "</string>\n").getBytes());
+                    fos.write(("\t\t\t\t<key>noteArray</key>\n").getBytes());
+                    fos.write(("\t\t\t\t<array>\n").getBytes());
+
+                    noteNum = noteNoData.getNoteArray().size();
+                    for (int index = 0; index < noteNum; index++) {
+                        note = noteNoData.getNoteArray().get(index);
+                        fos.write(("\t\t\t\t\t<dict>\n").getBytes());
+                        fos.write(("\t\t\t\t\t\t<key>FretNo</key>\n").getBytes());
+                        fos.write(("\t\t\t\t\t\t<integer>" + note.getFretNo() + "</integer>\n").getBytes());
+                        fos.write(("\t\t\t\t\t\t<key>PlayType</key>\n").getBytes());
+                        fos.write(("\t\t\t\t\t\t<string>" + note.getPlayType() + "</string>\n").getBytes());
+                        fos.write(("\t\t\t\t\t\t<key>StringNo</key>\n").getBytes());
+                        fos.write(("\t\t\t\t\t\t<integer>" + note.getStringNo() + "</integer>\n").getBytes());
+                        fos.write(("\t\t\t\t\t</dict>\n").getBytes());
+                    }
+                    fos.write(("\t\t\t\t</array>\n").getBytes());
+                    fos.write(("\t\t\t</dict>\n").getBytes());
+                }
+                fos.write(("\t\t</array>\n").getBytes());
+            }
+            fos.write(("\t</array>\n").getBytes());
+            fos.write(("</dict>\n").getBytes());
+            fos.write(("</plist>\n").getBytes());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private BarSize calBarSizeWithNoteNoArray(BarNoData barNoData, float currentMinimWidth, float currentCrotchetaWidth, float currentQuaverWidth, float currentDemiquaverWidth) {

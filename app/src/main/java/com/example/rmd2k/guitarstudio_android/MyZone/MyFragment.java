@@ -16,7 +16,11 @@ import android.widget.ListView;
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.R;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +36,7 @@ import java.util.List;
 public class MyFragment extends Fragment {
 
     Context mContext;
+    NotesModel notesModel;
     ArrayList<String> guitarNoteNames;
 
     private static final String ARG_PARAM1 = "param1";
@@ -66,9 +71,9 @@ public class MyFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        notesModel = NotesModel.getInstance(this.getActivity().getApplicationContext());
+        mContext = this.getActivity().getApplicationContext();
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,17 +81,15 @@ public class MyFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         ListView lstGuitarNotes = view.findViewById(R.id.lstGuitarNotes);
-        AssetManager manager = getContext().getAssets();
+
+        notesModel.copyAssetFilesToFileDir(this.getActivity());
+
         guitarNoteNames = new ArrayList<>();
-        try {
-            String[] files = manager.list("");
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].endsWith(".plist")) {
-                    guitarNoteNames.add(files[i]);
-                }
+        String[] files = mContext.fileList();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].endsWith(".plist")) {
+                guitarNoteNames.add(files[i]);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         lstGuitarNotes.setOnItemClickListener(itemClickListener);
@@ -100,6 +103,7 @@ public class MyFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent();
+            intent.putExtra("GuitarNoteName", guitarNoteNames.get(position));
             if (position < guitarNoteNames.size()) {
                 intent.setClass(getActivity(), GuitarNoteViewActivity.class);
             } else {
