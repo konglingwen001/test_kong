@@ -132,9 +132,9 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.menu_save:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("保存");
                 if (notesModel.isNoteChanged()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("保存");
                     builder.setMessage("吉他谱已更改，是否保存？");
                     final EditText et = new EditText(mContext);
                     et.setHint(notesModel.getGuitarNoteName());
@@ -151,9 +151,16 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
                             notesModel.saveGuitarNotes(et.getText().toString());
                         }
                     });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                } else {
+                    builder.setMessage("吉他谱未更改！");
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
                 }
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 return true;
             case android.R.id.home:
                 finish();

@@ -535,7 +535,7 @@ public class NotesModel {
     }
 
     public boolean isNoteChanged() {
-        return oldGuitarNotes.equals(rootNoteDic);
+        return !oldGuitarNotes.equals(rootNoteDic);
     }
 
     public void saveGuitarNotes(String guitarNoteName) {
