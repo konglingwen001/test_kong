@@ -46,7 +46,12 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(new MyFragment());
         fragments.add(new MyFragment());
 
-        FragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), fragments, new String[]{"我的", "乐库", "工具", "设置"});
+        String myZone = getText(R.string.navi_myZone).toString();
+        String musicLibrary = getText(R.string.navi_musicLibrary).toString();
+        String tool = getText(R.string.navi_tool).toString();
+        String setting = getText(R.string.navi_setting).toString();
+
+        FragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), fragments, new String[]{myZone, musicLibrary, tool, setting});
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
     }

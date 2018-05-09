@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.rmd2k.guitarstudio_android.R;
+
 import java.util.ArrayList;
 
 /**
@@ -47,7 +49,7 @@ public class GuitarNoteListAdapter extends BaseAdapter {
         }
         TextView tvName = convertView.findViewById(android.R.id.text1);
         if (position == guitarNoteList.size()) {
-            tvName.setText("Add GuitarNote");
+            tvName.setText(mContext.getText(R.string.new_guitarnotes));
         } else {
             tvName.setText(guitarNoteList.get(position));
         }

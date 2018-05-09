@@ -4,6 +4,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="navi_myZone">我的</string>
+    <string name="navi_musicLibrary">乐库</string>
+    <string name="navi_tool">工具</string>
+    <string name="navi_setting">设定</string>
+
     <string name="note_minim">2</string>
     <string name="note_crotcheta">4</string>
     <string name="note_quaver">8</string>
@@ -27,5 +32,13 @@
     <string name="btn_remove_note">rmoveNote</string>
     <string name="menu_save">保存</string>
     <string name="menu_edit">编辑</string>
+
+    <string name="dialog_title_save">保存</string>
+    <string name="dialog_message_save_or_not">吉他谱已更改，是否保存？</string>
+    <string name="dialog_ok">确定</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_message_not_changed">吉他谱未更改！</string>
+
+    <string name="new_guitarnotes">新建吉他谱</string>
 
 </resources>

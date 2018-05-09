@@ -133,27 +133,27 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_save:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("保存");
+                builder.setTitle(getText(R.string.dialog_title_save));
                 if (notesModel.isNoteChanged()) {
-                    builder.setMessage("吉他谱已更改，是否保存？");
+                    builder.setMessage(getText(R.string.dialog_message_save_or_not));
                     final EditText et = new EditText(mContext);
                     et.setHint(notesModel.getGuitarNoteName());
                     builder.setView(et);
-                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(getText(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
                         }
                     });
-                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    builder.setPositiveButton(getText(R.string.dialog_ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             notesModel.saveGuitarNotes(et.getText().toString());
                         }
                     });
                 } else {
-                    builder.setMessage("吉他谱未更改！");
-                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    builder.setMessage(getText(R.string.dialog_message_not_changed));
+                    builder.setPositiveButton(getText(R.string.dialog_ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                         }

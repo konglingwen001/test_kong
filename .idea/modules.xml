@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GuitarStudio_Android-master.iml" filepath="$PROJECT_DIR$/GuitarStudio_Android-master.iml" />
+      <module fileurl="file://C:\Users\CHT1HTSH3236\AndroidStudioProjects\test_kong\GuitarStudio_Android-master.iml" filepath="C:\Users\CHT1HTSH3236\AndroidStudioProjects\test_kong\GuitarStudio_Android-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/test_kong.iml" filepath="$PROJECT_DIR$/test_kong.iml" />
     </modules>
