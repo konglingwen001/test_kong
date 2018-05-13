@@ -213,7 +213,6 @@ public class NotesModel {
             mutableEditNote.setFretNo(fretNo + "");
             mutableEditNote.setPlayType(notesArray.get(0).getPlayType());
             notesArray.add(mutableEditNote);
-            addNote(mutableEditNote, barNo, noteNo);
 
         } else {    // 当音符编辑框所在位置有音符时，修改原有音符
 
