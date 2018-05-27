@@ -122,16 +122,15 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_edit:
                 if (!editMode) {
-                    editMode = true;
                     noteEditView.setMaxHeight(getWindow().getDecorView().getHeight());
                     lstGuitarNoteView.setSelector(new ColorDrawable(Color.TRANSPARENT));
                 } else {
-                    editMode = false;
                     noteEditView.setMaxHeight(0);
                     lstGuitarNoteView.setSelector(oldSelector);
                 }
+                editMode = !editMode;
                 return true;
-            case R.id.menu_save:
+            case android.R.id.home:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(getText(R.string.dialog_title_save));
                 if (notesModel.isNoteChanged()) {
@@ -139,31 +138,31 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
                     final EditText et = new EditText(mContext);
                     et.setHint(notesModel.getGuitarNoteName());
                     builder.setView(et);
-                    builder.setNegativeButton(getText(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(getText(R.string.dialog_no), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
+                            finish();
                         }
                     });
                     builder.setPositiveButton(getText(R.string.dialog_ok), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             notesModel.saveGuitarNotes(et.getText().toString());
+                            notesModel.reloadGuitarNotesFiles();
+                            finish();
                         }
                     });
-                } else {
-                    builder.setMessage(getText(R.string.dialog_message_not_changed));
-                    builder.setPositiveButton(getText(R.string.dialog_ok), new DialogInterface.OnClickListener() {
+                    builder.setNeutralButton(getText(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+
                         }
                     });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                } else {
+                    finish();
                 }
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                return true;
-            case android.R.id.home:
-                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -35,10 +35,12 @@
 
     <string name="dialog_title_save">保存</string>
     <string name="dialog_message_save_or_not">吉他谱已更改，是否保存？</string>
-    <string name="dialog_ok">确定</string>
+    <string name="dialog_ok">是</string>
+    <string name="dialog_no">否</string>
     <string name="dialog_cancel">取消</string>
     <string name="dialog_message_not_changed">吉他谱未更改！</string>
 
     <string name="new_guitarnotes">新建吉他谱</string>
+    <string name="btnCreateGuitarNotes">新建吉他谱</string>
 
 </resources>

@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -41,6 +42,8 @@ public class NotesModel {
     public static final String TYPE_QUAVER = "8";
     public static final String TYPE_DEMIQUAVER = "16";
 
+    private ArrayList<String> guitarNotesFiles = new ArrayList<>();
+
     private static Context mContext;
     private static EditNoteInfo currentEditNote;
 
@@ -62,6 +65,28 @@ public class NotesModel {
     }
 
     private NotesModel() {
+    }
+
+    public int getGuitarNotesFilesNum() {
+        return guitarNotesFiles.size();
+    }
+
+    public String getGuitarNotesFile(int index) {
+        return guitarNotesFiles.get(index);
+    }
+
+    public ArrayList<String> getGuitarNotesFileArray() {
+        return guitarNotesFiles;
+    }
+
+    public void reloadGuitarNotesFiles() {
+        guitarNotesFiles.clear();
+        String[] files = mContext.fileList();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].endsWith(".plist")) {
+                guitarNotesFiles.add(files[i].split("\\.")[0]);
+            }
+        }
     }
 
     private static void initData() {
@@ -337,7 +362,7 @@ public class NotesModel {
 
     private void loadGuitarNotes(String guitarNoteName) {
         String path = mContext.getFilesDir().toString();
-        String plistPath = path + "/" + guitarNoteName;
+        String plistPath = path + "/" + guitarNoteName + ".plist";
         File file = new File(plistPath);
         if (file.exists()) {
             Log.v("DEBUG", plistPath);

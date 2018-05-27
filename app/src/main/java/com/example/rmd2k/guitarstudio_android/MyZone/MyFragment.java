@@ -37,7 +37,9 @@ public class MyFragment extends Fragment {
 
     Context mContext;
     NotesModel notesModel;
-    ArrayList<String> guitarNoteNames;
+
+    ListView lstGuitarNotes;
+    GuitarNoteListAdapter adapter;
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -80,20 +82,14 @@ public class MyFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_my, container, false);
-        ListView lstGuitarNotes = view.findViewById(R.id.lstGuitarNotes);
+        lstGuitarNotes = view.findViewById(R.id.lstGuitarNotes);
 
         notesModel.copyAssetFilesToFileDir(this.getActivity());
 
-        guitarNoteNames = new ArrayList<>();
-        String[] files = mContext.fileList();
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].endsWith(".plist")) {
-                guitarNoteNames.add(files[i]);
-            }
-        }
+        notesModel.reloadGuitarNotesFiles();
 
         lstGuitarNotes.setOnItemClickListener(itemClickListener);
-        GuitarNoteListAdapter adapter = new GuitarNoteListAdapter(getContext(), guitarNoteNames);
+        adapter = new GuitarNoteListAdapter(getContext());
         lstGuitarNotes.setAdapter(adapter);
 
         return view;
@@ -103,15 +99,17 @@ public class MyFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent();
-            intent.putExtra("GuitarNoteName", guitarNoteNames.get(position));
-            if (position < guitarNoteNames.size()) {
-                intent.setClass(getActivity(), GuitarNoteViewActivity.class);
-            } else {
-                intent.setClass(getActivity(), GuitarNoteViewActivity.class);
-            }
+            intent.putExtra("GuitarNoteName", notesModel.getGuitarNotesFile(position));
+            intent.setClass(getActivity(), GuitarNoteViewActivity.class);
             startActivity(intent);
         }
     };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.notifyDataSetChanged();
+    }
 
     @Override
     public void onAttach(Context context) {
