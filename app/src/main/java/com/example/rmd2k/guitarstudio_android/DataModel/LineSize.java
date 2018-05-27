@@ -74,4 +74,23 @@ public class LineSize {
     public void setDemiquaverWidth(float demiquaverWidth) {
         this.demiquaverWidth = demiquaverWidth;
     }
+
+    public float getNoteWidth(String noteType) {
+        float currentWidth = 0;
+        switch (noteType) {
+            case NotesModel.TYPE_MINIM:
+                currentWidth = minimWidth;
+                break;
+            case NotesModel.TYPE_CROTCHET:
+                currentWidth = crotchetaWidth;
+                break;
+            case NotesModel.TYPE_QUAVER:
+                currentWidth = quaverWidth;
+                break;
+            case NotesModel.TYPE_DEMIQUAVER:
+                currentWidth =  demiquaverWidth;
+                break;
+        }
+        return currentWidth;
+    }
 }

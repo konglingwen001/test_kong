@@ -140,20 +140,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
                 String noteType = notesModel.getNoteType(barNo, noteNo);
 
                 // 设定音符X坐标
-                switch (noteType) {
-                    case NotesModel.TYPE_MINIM:
-                        noteCenterX += lineSize.getMinimWidth();
-                        break;
-                    case NotesModel.TYPE_CROTCHET:
-                        noteCenterX += lineSize.getCrotchetaWidth();
-                        break;
-                    case NotesModel.TYPE_QUAVER:
-                        noteCenterX += lineSize.getQuaverWidth();
-                        break;
-                    case NotesModel.TYPE_DEMIQUAVER:
-                        noteCenterX += lineSize.getDemiquaverWidth();
-                        break;
-                }
+                noteCenterX += lineSize.getNoteWidth(noteType);
 
                 // 根据触摸位置所在的音符位置绘制音符编辑框
                 if (barNo == editBarNo && noteNo == editNoteNo) {
@@ -350,7 +337,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         ArrayList<LineSize> notesSizeArray = notesModel.getNotesSizeArray();
         for (int i = 0; i < notesSizeArray.size(); i++) {
             LineSize lineSize = notesSizeArray.get(i);
-            if (lineSize.getStartBarNo() > note.getBarNo()) {
+            if (note.getBarNo() >= lineSize.getStartBarNo() && note.getBarNo() < lineSize.getStartBarNo() + lineSize.getBarNum()) {
                 oldLineNo = i;
                 break;
             }
@@ -375,10 +362,6 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         }
 
         LineSize lineSize = notesModel.getLineSize(lineNo);
-        float minimWidth = lineSize.getMinimWidth();
-        float crotchetaWidth = lineSize.getCrotchetaWidth();
-        float quaverWidth = lineSize.getQuaverWidth();
-        float demiquaverWidth = lineSize.getDemiquaverWidth();
         int barNo = lineSize.getStartBarNo();
         ArrayList barWidthArray = lineSize.getBarWidthArray();
 
@@ -401,21 +384,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
         ArrayList noteNoArray = notesModel.getNoteNoArray(barNo);
         for (int noteNo = 0; noteNo < noteNoArray.size(); noteNo++) {
             String noteType = notesModel.getNoteType(barNo, noteNo);
-
-            switch (noteType) {
-                case NotesModel.TYPE_MINIM:
-                    currentWidth = minimWidth;
-                    break;
-                case NotesModel.TYPE_CROTCHET:
-                    currentWidth = crotchetaWidth;
-                    break;
-                case NotesModel.TYPE_QUAVER:
-                    currentWidth = quaverWidth;
-                    break;
-                case NotesModel.TYPE_DEMIQUAVER:
-                    currentWidth =  demiquaverWidth;
-                    break;
-            }
+            currentWidth = lineSize.getNoteWidth(noteType);
             addPosX += currentWidth;
 
             if (posX < addPosX) {

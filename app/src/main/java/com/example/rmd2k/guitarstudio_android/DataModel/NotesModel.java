@@ -629,7 +629,7 @@ public class NotesModel {
         int demiquaverNum = 0;
 
         // 统计音符总数
-        String noteType = "";//[notesDic valueForKey:@"NoteType"];
+        String noteType = "";
         for (int noteNo = 0; noteNo < barNoData.getNoteNoDataArray().size(); noteNo++) {
             noteType = barNoData.getNoteNoDataArray().get(noteNo).getNoteType();
             switch (noteType) {
