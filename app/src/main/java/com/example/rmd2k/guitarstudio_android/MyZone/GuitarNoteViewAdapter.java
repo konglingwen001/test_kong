@@ -69,4 +69,6 @@ public class GuitarNoteViewAdapter extends BaseAdapter {
         return convertView;
     }
 
+
+
 }

@@ -1,17 +1,27 @@
 package com.example.rmd2k.guitarstudio_android.MyZone;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.R;
@@ -89,6 +99,7 @@ public class MyFragment extends Fragment {
         notesModel.reloadGuitarNotesFiles();
 
         lstGuitarNotes.setOnItemClickListener(itemClickListener);
+        lstGuitarNotes.setOnItemLongClickListener(itemLongClickListener);
         adapter = new GuitarNoteListAdapter(getContext());
         lstGuitarNotes.setAdapter(adapter);
 
@@ -102,6 +113,35 @@ public class MyFragment extends Fragment {
             intent.putExtra("GuitarNoteName", notesModel.getGuitarNotesFile(position));
             intent.setClass(getActivity(), GuitarNoteViewActivity.class);
             startActivity(intent);
+        }
+    };
+
+    List<String> list;
+
+    AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
+
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            list = new ArrayList<>();
+            list.add("删除");
+            list.add("重命名");
+            ListView listView = new ListView(getContext());
+            listView.setBackgroundColor(Color.GRAY);
+            listView.setAdapter(new PopupAdapter(getContext(), list));
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Log.i("TAG", list.get(position));
+                }
+            });
+
+            PopupWindow popupWindow = new PopupWindow(listView, 400, 400);
+            popupWindow.setFocusable(true);
+            popupWindow.setOutsideTouchable(true);
+            WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            int xPos = windowManager.getDefaultDisplay().getWidth() / 2 - popupWindow.getWidth() / 2;
+            popupWindow.showAtLocation(parent, Gravity.NO_GRAVITY, xPos, 300);
+            return true;
         }
     };
 

@@ -55,22 +55,5 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
     }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, System.currentTimeMillis() + " : ACtion down");
-                return super.onTouchEvent(event);
-            case MotionEvent.ACTION_UP:
-                Log.d(TAG, System.currentTimeMillis() + " : ACtion up");
-                return super.onTouchEvent(event);
-            case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, System.currentTimeMillis() + " : ACtion move");
-                return super.onTouchEvent(event);
-            default:
-                break;
-        }
-        return super.onTouchEvent(event);
-    }
+    
 }
