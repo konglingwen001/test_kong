@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.example.rmd2k.guitarstudio_android.MainActivity">
 
-    <android.support.v4.view.ViewPager
+    <com.example.rmd2k.guitarstudio_android.MyViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"

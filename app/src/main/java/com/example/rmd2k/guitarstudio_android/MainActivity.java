@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     TabLayout tabLayout;
-    ViewPager viewPager;
+    MyViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
