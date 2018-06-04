@@ -1,21 +1,16 @@
 package com.example.rmd2k.guitarstudio_android;
 
-import android.os.MessageQueue;
+
 import android.support.v4.app.Fragment;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 
 import com.example.rmd2k.guitarstudio_android.Musiclibrary.MusicLibraryFragment;
 import com.example.rmd2k.guitarstudio_android.MyZone.MyFragment;
 import com.example.rmd2k.guitarstudio_android.MyZone.MyFragmentPagerAdapter;
-import com.example.rmd2k.guitarstudio_android.Setting.SettingFragment;
-import com.example.rmd2k.guitarstudio_android.Tools.ToolsFragment;
+import com.example.rmd2k.guitarstudio_android.MyZone.MyViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
