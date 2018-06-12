@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
@@ -46,10 +47,12 @@ public class GuitarNoteListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = mInflater.inflate(android.R.layout.simple_list_item_1, null);
+            convertView = mInflater.inflate(R.layout.note_title_list_view_cell, null);
         }
-        TextView tvName = convertView.findViewById(android.R.id.text1);
-        tvName.setText(notesModel.getGuitarNotesFile(position));
+        TextView tvNoteTitle = convertView.findViewById(R.id.tvNoteTitle);
+        tvNoteTitle.setText(notesModel.getGuitarNotesFile(position));
+        Button btnDelete = convertView.findViewById(R.id.btnDelete);
+        btnDelete.setMaxWidth(0);
 
         return convertView;
     }

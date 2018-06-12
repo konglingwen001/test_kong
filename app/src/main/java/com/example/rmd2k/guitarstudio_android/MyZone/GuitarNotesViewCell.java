@@ -313,7 +313,7 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, System.currentTimeMillis() + " : action down");
+                Log.d(TAG, System.currentTimeMillis() + " : action move");
                 return true;
             case MotionEvent.ACTION_UP:
                 Log.d(TAG, System.currentTimeMillis() + " : action up");
@@ -321,6 +321,9 @@ public class GuitarNotesViewCell extends View implements View.OnClickListener {
                 return true;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG, System.currentTimeMillis() + " : action move");
+                return true;
+            case MotionEvent.ACTION_CANCEL:
+                Log.d(TAG, System.currentTimeMillis() + " : action cancel");
                 return true;
             default:
                 break;

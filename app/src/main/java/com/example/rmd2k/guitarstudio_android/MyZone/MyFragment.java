@@ -48,7 +48,7 @@ public class MyFragment extends Fragment {
     Context mContext;
     NotesModel notesModel;
 
-    ListView lstGuitarNotes;
+    NoteTitleListView lstGuitarNotes;
     GuitarNoteListAdapter adapter;
 
     private static final String ARG_PARAM1 = "param1";
@@ -99,9 +99,11 @@ public class MyFragment extends Fragment {
         notesModel.reloadGuitarNotesFiles();
 
         lstGuitarNotes.setOnItemClickListener(itemClickListener);
-        lstGuitarNotes.setOnItemLongClickListener(itemLongClickListener);
+        lstGuitarNotes.setLongClickable(false);
+        //lstGuitarNotes.setOnItemLongClickListener(itemLongClickListener);
         adapter = new GuitarNoteListAdapter(getContext());
         lstGuitarNotes.setAdapter(adapter);
+
 
         return view;
     }
