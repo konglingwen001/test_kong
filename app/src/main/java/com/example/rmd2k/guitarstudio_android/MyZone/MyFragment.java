@@ -112,7 +112,7 @@ public class MyFragment extends Fragment {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Intent intent = new Intent();
-            intent.putExtra("GuitarNoteName", notesModel.getGuitarNotesFile(position));
+            intent.putExtra("fileName", notesModel.getGuitarNotesFile(position));
             intent.setClass(getActivity(), GuitarNoteViewActivity.class);
             startActivity(intent);
         }

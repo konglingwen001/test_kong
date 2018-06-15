@@ -31,7 +31,7 @@ public class NoteTitleListView extends ListView {
 
     public NoteTitleListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        btnDelete = findViewById(R.id.btnDelete);
+        //btnDelete = findViewById(R.id.btnDelete);
     }
 
     @Override
@@ -46,24 +46,32 @@ public class NoteTitleListView extends ListView {
                 downPosY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.i(TAG, "ACTION_MOVE");
+                //Log.i(TAG, "ACTION_MOVE");
                 currPosX = event.getX();
                 currPosY = event.getY();
                 if (Math.abs(currPosX - downPosX) > 10) {
-                    btnDelete.setFocusable(true);
+                    //btnDelete.setFocusable(true);
                 }
                 if (Math.abs(currPosY - downPosY) < 200) {
-                    Log.i(TAG, "move200");
+                    //Log.i(TAG, "move200");
                     return false;
                 } else {
                     isIntercepted = true;
                     return true;
                 }
             case MotionEvent.ACTION_UP:
+                Log.i(TAG, "ACTION_UP");
                 isIntercepted = false;
-                btnDelete.setFocusable(false);
+                currPosX = event.getX();
+                currPosY = event.getY();
+                int position = 0;
+                if (Math.abs(currPosX - downPosX) < 5 && Math.abs(currPosY - downPosY) < 5) {
+                    position = this.pointToPosition((int)currPosX, (int)currPosY);
+                    performItemClick(this, position, 0);
+                }
                 break;
             case MotionEvent.ACTION_CANCEL:
+                Log.i(TAG, "ACTION_CANCEL");
                 isIntercepted = false;
                 break;
         }

@@ -49,15 +49,19 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
     boolean editMode = false;
     Drawable oldSelector;
+    String guitarNoteName;
+    String fileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guitar_note_view);
 
+        fileName = getIntent().getStringExtra("fileName");
+
         mContext = getApplicationContext();
         notesModel = NotesModel.getInstance(mContext);
-        notesModel.setGuitarNotesWithNotesTitle(getIntent().getStringExtra("GuitarNoteName"));
+        notesModel.setGuitarNotesWithNotesTitle(fileName);
         lstGuitarNoteView = findViewById(R.id.lstGuitarNoteView);
         noteEditView = findViewById(R.id.noteEditView);
         adapter = new GuitarNoteViewAdapter(mContext, myHandler);
@@ -67,6 +71,8 @@ public class GuitarNoteViewActivity extends AppCompatActivity {
 
         // 保存ListView点击效果
         oldSelector = lstGuitarNoteView.getSelector();
+
+        this.setTitle(notesModel.getGuitarNoteName());
     }
 
     private AbsListView.OnScrollListener scrollListener = new AbsListView.OnScrollListener() {
