@@ -21,7 +21,9 @@ public class NoteTitleListView extends ListView {
     private float downPosY;
     private float currPosX;
     private float currPosY;
-    private boolean isIntercepted = false;
+    private float offsetX;
+    private float offsetY;
+    private boolean horizontalSlide = false;
 
     Button btnDelete;
 
@@ -36,43 +38,57 @@ public class NoteTitleListView extends ListView {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-//        if (isIntercepted) {
-//            return true;
-//        }
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.i(TAG, "ACTION_DOWN");
+                //Log.i(TAG, "ACTION_DOWN");
+                horizontalSlide = false;
                 downPosX = event.getX();
                 downPosY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                //Log.i(TAG, "ACTION_MOVE");
-                currPosX = event.getX();
-                currPosY = event.getY();
-                if (Math.abs(currPosX - downPosX) > 10) {
-                    //btnDelete.setFocusable(true);
-                }
-                if (Math.abs(currPosY - downPosY) < 200) {
-                    //Log.i(TAG, "move200");
+                if (horizontalSlide) {
                     return false;
-                } else {
-                    isIntercepted = true;
-                    return true;
                 }
-            case MotionEvent.ACTION_UP:
-                Log.i(TAG, "ACTION_UP");
-                isIntercepted = false;
+                Log.i(TAG, "ACTION_MOVE");
+
                 currPosX = event.getX();
                 currPosY = event.getY();
-                int position = 0;
-                if (Math.abs(currPosX - downPosX) < 5 && Math.abs(currPosY - downPosY) < 5) {
-                    position = this.pointToPosition((int)currPosX, (int)currPosY);
+                offsetX = Math.abs(currPosX - downPosX);
+                offsetY = Math.abs(currPosY - downPosY);
+                if (offsetX > 5 || offsetY > 5) {
+                    // 当垂直或者水平移动大于5时，开始判断是上下滑动还是左右滑动，并且返回false，不拦截事件
+                    if (offsetX > offsetY) {
+                        // 左右滑动
+                        Log.i(TAG, "horizontal");
+                        horizontalSlide = true; // 锁定左右滑动
+                        return false;
+                    } else {
+                        if (!horizontalSlide) {
+                            // 上下滑动
+                            Log.i(TAG, "vertical");
+                            return true;
+                        } else {
+                            // 左右滑动
+                            return false;
+                        }
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                //Log.i(TAG, "ACTION_UP");
+                currPosX = event.getX();
+                currPosY = event.getY();
+                offsetX = Math.abs(currPosX - downPosX);
+                offsetY = Math.abs(currPosY - downPosY);
+
+                if (offsetX < 5 && offsetY < 5) {
+                    int position = this.pointToPosition((int)currPosX, (int)currPosY);
                     performItemClick(this, position, 0);
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-                Log.i(TAG, "ACTION_CANCEL");
-                isIntercepted = false;
+                //Log.i(TAG, "ACTION_CANCEL");
                 break;
         }
         return super.onInterceptTouchEvent(event);
