@@ -169,6 +169,9 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
         if (tvNoteTitleWidth + offsetX < (screenWidth - BTN_DELETE_WIDTH / 2)) {
             // btnDelete露出部分大于一半时
             isBtnDeleteVisible = true;
+            btnDelete.setFocusable(true);
+            btnDelete.setClickable(true);
+            btnDelete.setFocusableInTouchMode(true);
             Message msg = Message.obtain();
             msg.what = SET_CLICKABLE;
             msg.arg1 = CLICKABLE;
@@ -176,6 +179,9 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
         } else {
             // btnDelete露出部分小于一半时
             isBtnDeleteVisible = false;
+            btnDelete.setFocusable(false);
+            btnDelete.setClickable(false);
+            btnDelete.setFocusableInTouchMode(false);
         }
 
         bounceAnimate(isBtnDeleteVisible);
