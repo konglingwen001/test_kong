@@ -50,6 +50,7 @@ public class GuitarNoteListAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.note_title_list_view_cell, null);
         }
+        ((NoteNameListVeiwCell)convertView).setMyHandler(myHandler);
         TextView tvNoteTitle = convertView.findViewById(R.id.tvNoteTitle);
         tvNoteTitle.setText(notesModel.getGuitarNotesFile(position));
         Button btnDelete = convertView.findViewById(R.id.btnDelete);

@@ -28,6 +28,7 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
     private static final int REFRESH_LIST = 0;
     private static final int SET_CLICKABLE = 1;
     private static final int CLICKABLE = 0;
+    private static final int NOT_CLICKABLE = 1;
 
     private int tvNoteTitleWidth;
     private int btnDeleteWidth;
@@ -56,6 +57,9 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
         notesModel = NotesModel.getInstance(getContext());
     }
 
+    public void setMyHandler(MyFragment.MyHandler myHandler) {
+        this.myHandler = myHandler;
+    }
 
     int getScreenWidth() {
         WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
@@ -172,9 +176,11 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
             btnDelete.setFocusable(true);
             btnDelete.setClickable(true);
             btnDelete.setFocusableInTouchMode(true);
+
             Message msg = Message.obtain();
             msg.what = SET_CLICKABLE;
-            msg.arg1 = CLICKABLE;
+            msg.arg1 = NOT_CLICKABLE;
+            myHandler.sendMessage(msg);
 
         } else {
             // btnDelete露出部分小于一半时
@@ -182,6 +188,11 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
             btnDelete.setFocusable(false);
             btnDelete.setClickable(false);
             btnDelete.setFocusableInTouchMode(false);
+
+            Message msg = Message.obtain();
+            msg.what = SET_CLICKABLE;
+            msg.arg1 = CLICKABLE;
+            myHandler.sendMessage(msg);
         }
 
         bounceAnimate(isBtnDeleteVisible);

@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.R;
@@ -29,6 +30,7 @@ public class MyFragment extends Fragment {
     private static final int REFRESH_LIST = 0;
     private static final int SET_CLICKABLE = 1;
     private static final int CLICKABLE = 0;
+    private static final int NOT_CLICKABLE = 1;
 
     Context mContext;
     NotesModel notesModel;
@@ -84,26 +86,29 @@ public class MyFragment extends Fragment {
                     break;
                 case SET_CLICKABLE:
                     if (msg.arg1 == CLICKABLE) {
+                        Log.i("KONG", "not clickable");
                         activity.lstGuitarNotes.setFocusable(true);
                         activity.lstGuitarNotes.setClickable(true);
+                        activity.lstGuitarNotes.setOnItemClickListener(activity.itemClickListener);
                     } else {
+                        Log.i("KONG", "clickable");
                         activity.lstGuitarNotes.setFocusable(false);
                         activity.lstGuitarNotes.setClickable(false);
+                        activity.lstGuitarNotes.setOnItemClickListener(null);
                     }
                     break;
-
             }
-
         }
     }
 
     AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent intent = new Intent();
-            intent.putExtra("fileName", notesModel.getGuitarNotesFile(position));
-            intent.setClass(getActivity(), GuitarNoteViewActivity.class);
-            startActivity(intent);
+            Toast.makeText(mContext, "onItemClick", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent();
+//            intent.putExtra("fileName", notesModel.getGuitarNotesFile(position));
+//            intent.setClass(getActivity(), GuitarNoteViewActivity.class);
+//            startActivity(intent);
         }
     };
 
