@@ -1,8 +1,10 @@
 package com.example.rmd2k.guitarstudio_android.MyZone;
 
 import android.content.Context;
+import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ListView;
 
@@ -14,7 +16,10 @@ public class NoteTitleListView extends ListView {
 
     private static final String TAG = "NoteTitleListView";
 
-    public MyFragment.MyHandler myHandler = null;
+    private static final int REFRESH_LIST = 0;
+    private static final int SET_CLICKABLE = 1;
+
+    private Handler myFragment_Handler = null;
 
     private float downPosX;
     private float downPosY;
@@ -32,19 +37,46 @@ public class NoteTitleListView extends ListView {
         super(context, attrs);
     }
 
+    public void setMyFragment_Handler(Handler handler) {
+        myFragment_Handler = handler;
+    }
+
+    private boolean checkBtnDeleteVisible() {
+        int count = getCount();
+        NoteNameListVeiwCell cell;
+        for (int i = 0; i < count; i++) {
+            cell = (NoteNameListVeiwCell) getChildAt(i);
+            if (cell.isBtnDeleteVisible()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+        1.
+     */
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (myHandler != null) {
-                    myHandler.sendMessage(Message.obtain());
+                Log.e("KONG", "ListView action down");
+                if (myFragment_Handler != null && checkBtnDeleteVisible()) {
+                    Log.e("KONG", "myHandler");
+                    Message msg = Message.obtain();
+                    msg.what = REFRESH_LIST;
+                    myFragment_Handler.sendMessage(msg);
+                    return true;
                 }
                 horizontalSlide = false;
                 downPosX = event.getX();
                 downPosY = event.getY();
-                break;
+                //break;
+                return false;
             case MotionEvent.ACTION_MOVE:
+                Log.e("KONG", "ListView action move");
                 if (horizontalSlide) {
                     return false;
                 }
@@ -69,21 +101,42 @@ public class NoteTitleListView extends ListView {
                         }
                     }
                 }
-                break;
+                //break;
+                return false;
             case MotionEvent.ACTION_UP:
+                Log.e("KONG", "ListView action up");
                 currPosX = event.getX();
                 currPosY = event.getY();
                 offsetX = Math.abs(currPosX - downPosX);
                 offsetY = Math.abs(currPosY - downPosY);
 
                 if (offsetX < 5 && offsetY < 5) {
+                    Log.e("KONG", "Clicked");
                     int position = this.pointToPosition((int)currPosX, (int)currPosY);
-                    performItemClick(this, position, 0);
+                    //performItemClick(this, position, 0);
+                    return true;
                 }
-                break;
+                //break;
+                return false;
             case MotionEvent.ACTION_CANCEL:
                 break;
         }
         return super.onInterceptTouchEvent(event);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                Log.e("KONG", "-----------------------------------------------1");
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                Log.e("KONG", "-----------------------------------------------2");
+                break;
+        }
+
+        return super.onTouchEvent(event);
     }
 }

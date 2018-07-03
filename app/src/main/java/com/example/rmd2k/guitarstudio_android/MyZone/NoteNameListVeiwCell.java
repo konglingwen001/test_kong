@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -66,6 +67,9 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
         return wm.getDefaultDisplay().getWidth();
     }
 
+    public boolean isBtnDeleteVisible() {
+        return isBtnDeleteVisible;
+    }
 
     @Override
     protected void onFinishInflate() {
@@ -85,13 +89,16 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                Log.e("KONG", "Cell action down");
                 horizontalSlide = false;
                 downPosX = event.getX();
                 downPosY = event.getY();
                 tvNoteTitleWidth = tvNoteTitle.getWidth();
                 btnDeleteWidth = btnDelete.getWidth();
                 return true;
+                //break;
             case MotionEvent.ACTION_MOVE:
+                Log.e("KONG", "Cell action move");
                 currPosX = event.getX();
                 currPosY = event.getY();
                 offsetX = currPosX - downPosX;
@@ -104,7 +111,7 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
                     } else {
                         if (!horizontalSlide) {
                             // 上下滑动
-                            return false;
+                            return super.onTouchEvent(event);
                         }
                     }
                 }
@@ -147,8 +154,17 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
                         isRightRestrainted = false;
                     }
                 }
-                break;
+                //break;
+                return super.onTouchEvent(event);
             case MotionEvent.ACTION_UP:
+                Log.e("KONG", "Cell action up");
+                currPosX = event.getX();
+                currPosY = event.getY();
+                offsetX = currPosX - downPosX;
+                offsetY = currPosY - downPosY;
+                if (Math.abs(offsetX) < 5 && Math.abs(offsetY) < 5) {
+                    return super.onTouchEvent(event);
+                }
                 handleBounce(event);
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -172,33 +188,35 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
 
         if (tvNoteTitleWidth + offsetX < (screenWidth - BTN_DELETE_WIDTH / 2)) {
             // btnDelete露出部分大于一半时
-            isBtnDeleteVisible = true;
-            btnDelete.setFocusable(true);
-            btnDelete.setClickable(true);
-            btnDelete.setFocusableInTouchMode(true);
+            //btnDelete.setFocusable(true);
+            //btnDelete.setClickable(true);
+            //btnDelete.setFocusableInTouchMode(true);
 
             Message msg = Message.obtain();
             msg.what = SET_CLICKABLE;
             msg.arg1 = NOT_CLICKABLE;
             myHandler.sendMessage(msg);
 
+            bounceAnimate(true);
+
         } else {
             // btnDelete露出部分小于一半时
-            isBtnDeleteVisible = false;
-            btnDelete.setFocusable(false);
-            btnDelete.setClickable(false);
-            btnDelete.setFocusableInTouchMode(false);
+            //btnDelete.setFocusable(false);
+            //btnDelete.setClickable(false);
+            //btnDelete.setFocusableInTouchMode(false);
 
             Message msg = Message.obtain();
             msg.what = SET_CLICKABLE;
             msg.arg1 = CLICKABLE;
             myHandler.sendMessage(msg);
-        }
 
-        bounceAnimate(isBtnDeleteVisible);
+            bounceAnimate(false);
+        }
     }
 
     private void bounceAnimate(boolean visible) {
+
+        isBtnDeleteVisible = visible;
 
         int newWidth;
         if (visible) {
@@ -215,6 +233,7 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 int currVal = (int) animation.getAnimatedValue();
+                //Log.e("KONG", currVal + "");
                 tvNoteTitle.getLayoutParams().width = currVal;
                 tvNoteTitle.requestLayout();
             }

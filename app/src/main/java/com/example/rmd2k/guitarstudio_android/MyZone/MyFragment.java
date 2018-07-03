@@ -55,7 +55,7 @@ public class MyFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         lstGuitarNotes = view.findViewById(R.id.lstGuitarNotes);
-        lstGuitarNotes.myHandler = myHandler;
+        lstGuitarNotes.setMyFragment_Handler(myHandler);
 
         notesModel.copyAssetFilesToFileDir(this.getActivity());
 
@@ -86,14 +86,14 @@ public class MyFragment extends Fragment {
                     break;
                 case SET_CLICKABLE:
                     if (msg.arg1 == CLICKABLE) {
-                        Log.i("KONG", "not clickable");
-                        activity.lstGuitarNotes.setFocusable(true);
-                        activity.lstGuitarNotes.setClickable(true);
+                        Log.i("KONG", "clickable");
+                        //activity.lstGuitarNotes.setFocusable(true);
+                        //activity.lstGuitarNotes.setClickable(true);
                         activity.lstGuitarNotes.setOnItemClickListener(activity.itemClickListener);
                     } else {
-                        Log.i("KONG", "clickable");
-                        activity.lstGuitarNotes.setFocusable(false);
-                        activity.lstGuitarNotes.setClickable(false);
+                        Log.i("KONG", "not clickable");
+                        //activity.lstGuitarNotes.setFocusable(false);
+                        //activity.lstGuitarNotes.setClickable(false);
                         activity.lstGuitarNotes.setOnItemClickListener(null);
                     }
                     break;
