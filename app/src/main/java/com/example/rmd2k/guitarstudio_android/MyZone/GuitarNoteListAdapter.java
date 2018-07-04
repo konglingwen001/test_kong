@@ -4,9 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
@@ -50,13 +53,24 @@ public class GuitarNoteListAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.note_title_list_view_cell, null);
         }
-        ((NoteNameListVeiwCell)convertView).setMyHandler(myHandler);
+        //((NoteNameListVeiwCell)convertView).setMyHandler(myHandler);
+        HorizontalScrollView svCell = convertView.findViewById(R.id.svCell);
+        svCell.setHorizontalScrollBarEnabled(false);
         TextView tvNoteTitle = convertView.findViewById(R.id.tvNoteTitle);
+        int width = getScreenWidth();
+        ViewGroup.LayoutParams lp = tvNoteTitle.getLayoutParams();
+        lp.width = width;
+        tvNoteTitle.setLayoutParams(lp);
         tvNoteTitle.setText(notesModel.getGuitarNotesFile(position));
         Button btnDelete = convertView.findViewById(R.id.btnDelete);
-        btnDelete.setMaxWidth(0);
+        //btnDelete.setMaxWidth(0);
 
         return convertView;
+    }
+
+    int getScreenWidth() {
+        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+        return wm.getDefaultDisplay().getWidth();
     }
 
     public void refreshVisibleItem(ListView listView) {

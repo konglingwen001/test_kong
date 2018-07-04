@@ -12,6 +12,9 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
@@ -21,7 +24,7 @@ import com.example.rmd2k.guitarstudio_android.R;
  * Created by CHT1HTSH3236 on 2018/6/11.
  */
 
-public class NoteNameListVeiwCell extends ConstraintLayout {
+public class NoteNameListVeiwCell extends LinearLayout {
 
     private static final String TAG = "NoteNameListVeiwCell";
 
@@ -46,6 +49,7 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
 
     MyFragment.MyHandler myHandler;
     NotesModel notesModel;
+    HorizontalScrollView svCell;
     Button btnDelete;
     TextView tvNoteTitle;
 
@@ -74,106 +78,108 @@ public class NoteNameListVeiwCell extends ConstraintLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        svCell = findViewById(R.id.svCell);
         btnDelete = findViewById(R.id.btnDelete);
         tvNoteTitle = findViewById(R.id.tvNoteTitle);
         screenWidth = getScreenWidth();
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return super.onInterceptTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                Log.e("KONG", "Cell action down");
-                horizontalSlide = false;
-                downPosX = event.getX();
-                downPosY = event.getY();
-                tvNoteTitleWidth = tvNoteTitle.getWidth();
-                btnDeleteWidth = btnDelete.getWidth();
-                return true;
-                //break;
-            case MotionEvent.ACTION_MOVE:
-                Log.e("KONG", "Cell action move");
-                currPosX = event.getX();
-                currPosY = event.getY();
-                offsetX = currPosX - downPosX;
-                offsetY = currPosY - downPosY;
-                if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
-                    // 当垂直或者水平移动大于5时，开始判断是上下滑动还是左右滑动，并且返回false，不拦截事件
-                    if (Math.abs(offsetX) > Math.abs(offsetY)) {
-                        // 左右滑动
-                        horizontalSlide = true; // 锁定左右滑动
-                    } else {
-                        if (!horizontalSlide) {
-                            // 上下滑动
-                            return super.onTouchEvent(event);
-                        }
-                    }
-                }
-
-                if (horizontalSlide) {
-                    LayoutParams lp = (LayoutParams) tvNoteTitle.getLayoutParams();
-                    lp.width = (tvNoteTitleWidth + (int)offsetX) < (screenWidth - notesModel.dp2px(BTN_DELETE_WIDTH) * 2) ? (screenWidth - notesModel.dp2px(BTN_DELETE_WIDTH) * 2) : (tvNoteTitleWidth + (int)offsetX);
-                    tvNoteTitle.setLayoutParams(lp);
-
-                    if ((btnDelete.getX() + btnDeleteWidth) <= screenWidth && !isRightRestrainted) {
-                        // 左滑时，btnDelete完全显示
-
-                        // 切换btnDelete的宽度约束为MATCH_CONSTRAINT
-                        LayoutParams btnLp = (LayoutParams) btnDelete.getLayoutParams();
-                        btnLp.width = LayoutParams.MATCH_CONSTRAINT;
-                        btnDelete.setLayoutParams(btnLp);
-
-                        // 将btnDelete的右端约束设置与父控件右端对齐
-                        ConstraintLayout constraintLayout = findViewById(R.id.noteTitleLayout);
-                        ConstraintSet constraintSet = new ConstraintSet();
-                        constraintSet.clone(constraintLayout);
-                        constraintSet.connect(btnDelete.getId(), ConstraintSet.RIGHT, ConstraintSet.PARENT_ID, ConstraintSet.RIGHT);
-                        constraintSet.applyTo(constraintLayout);
-                        isRightRestrainted = true;
-                    }
-                    if (tvNoteTitle.getWidth() + BTN_DELETE_WIDTH >= screenWidth && isRightRestrainted) {
-                        // 右滑时，btnDelete开始消失
-
-                        // 切换btnDelete的宽度约束为定长200
-                        LayoutParams btnLp = (LayoutParams) btnDelete.getLayoutParams();
-                        btnLp.width = notesModel.dp2px(BTN_DELETE_WIDTH);
-                        btnDelete.setLayoutParams(btnLp);
-
-                        // 取消btnDelete的右端约束
-                        ConstraintLayout constraintLayout = findViewById(R.id.noteTitleLayout);
-                        ConstraintSet constraintSet = new ConstraintSet();
-                        constraintSet.clone(constraintLayout);
-                        constraintSet.clear(btnDelete.getId(), ConstraintSet.RIGHT);
-                        constraintSet.applyTo(constraintLayout);
-                        isRightRestrainted = false;
-                    }
-                }
-                //break;
-                return super.onTouchEvent(event);
-            case MotionEvent.ACTION_UP:
-                Log.e("KONG", "Cell action up");
-                currPosX = event.getX();
-                currPosY = event.getY();
-                offsetX = currPosX - downPosX;
-                offsetY = currPosY - downPosY;
-                if (Math.abs(offsetX) < 5 && Math.abs(offsetY) < 5) {
-                    return super.onTouchEvent(event);
-                }
-                handleBounce(event);
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                break;
-            default:
-                break;
-        }
-        return super.onTouchEvent(event);
-    }
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent ev) {
+//        return super.onInterceptTouchEvent(ev);
+//    }
+//
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                Log.e("KONG", "Cell action down");
+//                horizontalSlide = false;
+//                downPosX = event.getX();
+//                downPosY = event.getY();
+//                tvNoteTitleWidth = tvNoteTitle.getWidth();
+//                btnDeleteWidth = btnDelete.getWidth();
+//                return true;
+//                //break;
+//            case MotionEvent.ACTION_MOVE:
+//                Log.e("KONG", "Cell action move");
+//                currPosX = event.getX();
+//                currPosY = event.getY();
+//                offsetX = currPosX - downPosX;
+//                offsetY = currPosY - downPosY;
+//                if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
+//                    // 当垂直或者水平移动大于5时，开始判断是上下滑动还是左右滑动，并且返回false，不拦截事件
+//                    if (Math.abs(offsetX) > Math.abs(offsetY)) {
+//                        // 左右滑动
+//                        horizontalSlide = true; // 锁定左右滑动
+//                    } else {
+//                        if (!horizontalSlide) {
+//                            // 上下滑动
+//                            return super.onTouchEvent(event);
+//                        }
+//                    }
+//                }
+//
+//                if (horizontalSlide) {
+//                    LayoutParams lp = (LayoutParams) tvNoteTitle.getLayoutParams();
+//                    lp.width = (tvNoteTitleWidth + (int)offsetX) < (screenWidth - notesModel.dp2px(BTN_DELETE_WIDTH) * 2) ? (screenWidth - notesModel.dp2px(BTN_DELETE_WIDTH) * 2) : (tvNoteTitleWidth + (int)offsetX);
+//                    tvNoteTitle.setLayoutParams(lp);
+//
+//                    if ((btnDelete.getX() + btnDeleteWidth) <= screenWidth && !isRightRestrainted) {
+//                        // 左滑时，btnDelete完全显示
+//
+//                        // 切换btnDelete的宽度约束为MATCH_CONSTRAINT
+//                        LayoutParams btnLp = (LayoutParams) btnDelete.getLayoutParams();
+//                        btnLp.width = LayoutParams.MATCH_CONSTRAINT;
+//                        btnDelete.setLayoutParams(btnLp);
+//
+//                        // 将btnDelete的右端约束设置与父控件右端对齐
+//                        ConstraintLayout constraintLayout = findViewById(R.id.noteTitleLayout);
+//                        ConstraintSet constraintSet = new ConstraintSet();
+//                        constraintSet.clone(constraintLayout);
+//                        constraintSet.connect(btnDelete.getId(), ConstraintSet.RIGHT, ConstraintSet.PARENT_ID, ConstraintSet.RIGHT);
+//                        constraintSet.applyTo(constraintLayout);
+//                        isRightRestrainted = true;
+//                    }
+//                    if (tvNoteTitle.getWidth() + BTN_DELETE_WIDTH >= screenWidth && isRightRestrainted) {
+//                        // 右滑时，btnDelete开始消失
+//
+//                        // 切换btnDelete的宽度约束为定长200
+//                        LayoutParams btnLp = (LayoutParams) btnDelete.getLayoutParams();
+//                        btnLp.width = notesModel.dp2px(BTN_DELETE_WIDTH);
+//                        btnDelete.setLayoutParams(btnLp);
+//
+//                        // 取消btnDelete的右端约束
+//                        ConstraintLayout constraintLayout = findViewById(R.id.noteTitleLayout);
+//                        ConstraintSet constraintSet = new ConstraintSet();
+//                        constraintSet.clone(constraintLayout);
+//                        constraintSet.clear(btnDelete.getId(), ConstraintSet.RIGHT);
+//                        constraintSet.applyTo(constraintLayout);
+//                        isRightRestrainted = false;
+//                    }
+//                }
+//                //break;
+//                return super.onTouchEvent(event);
+//            case MotionEvent.ACTION_UP:
+//                Log.e("KONG", "Cell action up");
+//                currPosX = event.getX();
+//                currPosY = event.getY();
+//                offsetX = currPosX - downPosX;
+//                offsetY = currPosY - downPosY;
+//                if (Math.abs(offsetX) < 5 && Math.abs(offsetY) < 5) {
+//                    Log.e("KONG", "super");
+//                    return super.onTouchEvent(event);
+//                }
+//                handleBounce(event);
+//                break;
+//            case MotionEvent.ACTION_CANCEL:
+//                break;
+//            default:
+//                break;
+//        }
+//        return super.onTouchEvent(event);
+//    }
 
     public void hideBtnDelete() {
         if (isBtnDeleteVisible) {
