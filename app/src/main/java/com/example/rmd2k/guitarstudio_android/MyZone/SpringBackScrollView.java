@@ -8,7 +8,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
+
+import com.example.rmd2k.guitarstudio_android.R;
 
 public class SpringBackScrollView extends HorizontalScrollView {
 
@@ -27,6 +30,11 @@ public class SpringBackScrollView extends HorizontalScrollView {
     private int speed = 30;
 
     private boolean isPull;
+    private boolean needSpring = false;
+
+    private int leftMoveOffset;
+    Button btnDelete;
+    int btnWidth;
 
     /**
      * 设置回弹的速度。值越大,速度越快。默认为30。
@@ -56,6 +64,9 @@ public class SpringBackScrollView extends HorizontalScrollView {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
+        btnDelete = findViewById(R.id.btnDelete);
+
         childView = getChildAt(0);
         if (childView != null) {
             normal.set(childView.getLeft(), childView.getTop(), childView.getRight(), childView.getBottom());
@@ -76,12 +87,41 @@ public class SpringBackScrollView extends HorizontalScrollView {
         switch (ev.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
+                needSpring = false;
                 mDownX = ev.getX();
                 mFirstX = ev.getX();
                 break;
 
             case MotionEvent.ACTION_UP:
-                springBackLocation();
+                if (needSpring) {
+                    springBackLocation();
+                } else {
+                    btnWidth = btnDelete.getWidth();
+                    if (leftMoveOffset > btnWidth / 2) {
+                        int offset = -(btnWidth - leftMoveOffset);
+                        Log.e("KONG", "offset1:" + offset);
+                        //scrollBy(-(btnWidth - leftMoveOffset), 0);
+
+                        this.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                smoothScrollBy(-(btnWidth - leftMoveOffset), 0);
+                            }
+                        });
+
+                    } else {
+                        int offset = leftMoveOffset;
+                        Log.e("KONG", "offset2:" + offset);
+                        //scrollTo(leftMoveOffset, 0);
+                        this.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                smoothScrollBy(leftMoveOffset, 0);
+                            }
+                        });
+
+                    }
+                }
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -99,6 +139,7 @@ public class SpringBackScrollView extends HorizontalScrollView {
 
                 // 当滚动到最上或者最下时就不会再滚动，这时移动布局
                 if (isNeedMove()) {
+                    needSpring = true;
                     // 保存正常的布局位置
                     if (normal.isEmpty()) {
                         normal.set(childView.getLeft(), childView.getTop(), childView.getRight(), childView.getBottom());
@@ -108,7 +149,6 @@ public class SpringBackScrollView extends HorizontalScrollView {
                     childView.layout(childView.getLeft() - deltaX, childView.getTop(),
                             childView.getRight() - deltaX, childView.getBottom());
                 }
-
                 break;
 
             default:
@@ -151,10 +191,8 @@ public class SpringBackScrollView extends HorizontalScrollView {
                             childView.layout(offLeft, normal.top, offRight, normal.bottom);
                         }
                     }
-
                 }, duration);
             }
-
         }
 
         // 上拉回弹
@@ -180,13 +218,9 @@ public class SpringBackScrollView extends HorizontalScrollView {
                             childView.layout(offLeft, normal.top, offRight, normal.bottom);
                         }
                     }
-
                 }, duration);
-
             }
-
         }
-
     }
 
     /**
@@ -203,7 +237,7 @@ public class SpringBackScrollView extends HorizontalScrollView {
         // int bottomMargin = params.bottomMargin;
         // int offset = childView.getHeight() - getHeight() + getPaddingBottom() + getPaddingTop() + topMargin + bottomMargin;
         int offset = childView.getWidth() - getWidth() + getPaddingStart() + getPaddingEnd();
-        int scrollX = getScrollY();
+        int scrollX = getScrollX();
 
         if (scrollX == 0) {
             return true;
@@ -214,4 +248,10 @@ public class SpringBackScrollView extends HorizontalScrollView {
         return false;
     }
 
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        leftMoveOffset = l;
+        //Log.e("KONG", "l: " + l);
+    }
 }
