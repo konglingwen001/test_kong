@@ -47,6 +47,7 @@ public class NoteNameListVeiwCell extends LinearLayout {
     private boolean horizontalSlide = false;
     private int screenWidth;
 
+    Context mContext;
     MyFragment.MyHandler myHandler;
     NotesModel notesModel;
     HorizontalScrollView svCell;
@@ -55,11 +56,17 @@ public class NoteNameListVeiwCell extends LinearLayout {
 
     public NoteNameListVeiwCell(Context context) {
         super(context);
+        init(context);
     }
 
     public NoteNameListVeiwCell(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        notesModel = NotesModel.getInstance(getContext());
+        init(context);
+    }
+
+    private void init(Context context) {
+        mContext = context;
+        notesModel = NotesModel.getInstance(mContext);
     }
 
     public void setMyHandler(MyFragment.MyHandler myHandler) {

@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -27,7 +29,7 @@ import java.util.List;
 
 public class MyFragment extends Fragment {
 
-    private static final int REFRESH_LIST = 0;
+    private static final int HIDE_ALL_BTNDELETE = 0;
     private static final int SET_CLICKABLE = 1;
     private static final int CLICKABLE = 0;
     private static final int NOT_CLICKABLE = 1;
@@ -36,8 +38,11 @@ public class MyFragment extends Fragment {
     NotesModel notesModel;
 
     NoteTitleListView lstGuitarNotes;
+    Button btnCreateGuitarNotes;
     GuitarNoteListAdapter adapter;
     private MyHandler myHandler = null;
+
+    boolean flag = true;
 
     public MyFragment(){}
 
@@ -64,8 +69,26 @@ public class MyFragment extends Fragment {
         lstGuitarNotes.setOnItemClickListener(itemClickListener);
         lstGuitarNotes.setLongClickable(false);
         //lstGuitarNotes.setOnItemLongClickListener(itemLongClickListener);
-        adapter = new GuitarNoteListAdapter(getContext(), myHandler);
+        adapter = new GuitarNoteListAdapter(getContext(), myHandler, lstGuitarNotes);
         lstGuitarNotes.setAdapter(adapter);
+
+        btnCreateGuitarNotes = view.findViewById(R.id.btnCreateGuitarNotes);
+        btnCreateGuitarNotes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View cell = lstGuitarNotes.getChildAt(0);
+                HorizontalScrollView svCell = cell.findViewById(R.id.svCell);
+                Button btnDelete = svCell.findViewById(R.id.btnDelete);
+                if (flag) {
+                    Log.e("KONG", "move left");
+                    svCell.smoothScrollBy(btnDelete.getWidth(), 0);
+                } else {
+                    Log.e("KONG", "move right");
+                    svCell.smoothScrollBy(-btnDelete.getWidth(), 0);
+                }
+                flag = !flag;
+            }
+        });
 
         return view;
     }
@@ -81,8 +104,8 @@ public class MyFragment extends Fragment {
         public void handleMessage(Message msg) {
             MyFragment activity = mFragment.get();
             switch (msg.what) {
-                case REFRESH_LIST:
-                    activity.adapter.refreshVisibleItem(activity.lstGuitarNotes);
+                case HIDE_ALL_BTNDELETE:
+                    activity.lstGuitarNotes.hideAllBtnDelete();
                     break;
                 case SET_CLICKABLE:
                     if (msg.arg1 == CLICKABLE) {
