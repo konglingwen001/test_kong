@@ -92,75 +92,47 @@ public class SpringBackScrollView extends HorizontalScrollView {
         }
     }
 
-    public void onRequestTouchEvent(MotionEvent event) {
-
-        float downPosX;
-        float downPosY;
-        float currPosX;
-        float currPosY;
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                downPosX = event.getX();
-                downPosY = event.getY();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                currPosX = event.getX();
-                currPosY = event.getY();
-                break;
-            case MotionEvent.ACTION_UP:
-                break;
-        }
-    }
-
+    public boolean isHideByListView = false;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        requestDisallowInterceptTouchEvent(true);
 
         switch (ev.getAction()) {
 
             case MotionEvent.ACTION_DOWN:
 
-                Log.e("KONG", "cell down");
-                //requestDisallowInterceptTouchEvent(false);
-
-                if (parentListView.checkBtnDeleteVisible()) {
-                    parentListView.hideAllBtnDelete();
-                    break;
-//                    // hide all btnDelete
-//                    Message msg = Message.obtain();
-//                    msg.what = HIDE_ALL_BTNDELETE;
-//                    myFragment_Handler.sendMessage(msg);
-                }
-
+                Log.e("KONG", "cell down" + this.position);
 
                 needSpring = false;
                 mDownX = ev.getX();
                 mFirstX = ev.getX();
-                //return true;
-                break;
+                return true;
+                //break;
 
             case MotionEvent.ACTION_UP:
-                Log.e("KONG", "cell up");
+                Log.e("KONG", "cell up" + this.position);
                 if (needSpring) {
                     springBackLocation();
                 } else {
                     btnWidth = btnDelete.getWidth();
                     if (leftMoveOffset > btnWidth / 2) {
+                        Log.e("kkk", "setBtnDeleteVisible(true)");
                         setBtnDeleteVisible(true);
                     } else {
+                        Log.e("kkk", "setBtnDeleteVisible(false)");
                         setBtnDeleteVisible(false);
                     }
                     if (leftMoveOffset < 5) {
                         parentListView.performItemClick(parentListView, position, 0);
-                        this.setPressed(true);
+                        parentListView.setPressed(true);
+                        setPressed(true);
                     }
                 }
+                isHideByListView = false;
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                Log.e("KONG", "cell move");
+                Log.e("KONG", "cell move:" + this.position);
                 // 移除滑动的消息队列
                 mHandler.removeCallbacksAndMessages(null);
 
@@ -186,6 +158,15 @@ public class SpringBackScrollView extends HorizontalScrollView {
                     childView.layout(childView.getLeft() - deltaX, childView.getTop(),
                             childView.getRight() - deltaX, childView.getBottom());
                 }
+
+                if (leftMoveOffset > 5) {
+                    parentListView.setPressed(false);
+                    setPressed(false);
+                    //parentListView.set
+                }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                Log.e("KONG", "cell cancel" + this.position);
                 break;
 
             default:
@@ -200,6 +181,7 @@ public class SpringBackScrollView extends HorizontalScrollView {
     }
 
     public void setBtnDeleteVisible(boolean visible) {
+        Log.e("kkk", "isBtnDeleteVisible:" + (visible ? "true" : "false"));
         isBtnDeleteVisible = visible;
         if (visible) {
             this.post(new Runnable() {
@@ -216,79 +198,6 @@ public class SpringBackScrollView extends HorizontalScrollView {
                 }
             });
         }
-    }
-
-    public void handleScrollTouchEvent(MotionEvent ev) {
-
-        switch (ev.getAction()) {
-
-            case MotionEvent.ACTION_DOWN:
-
-                Log.e("KONG", "cell down");
-                //requestDisallowInterceptTouchEvent(false);
-
-                if (parentListView.checkBtnDeleteVisible()) {
-                    parentListView.hideAllBtnDelete();
-                    break;
-//                    // hide all btnDelete
-//                    Message msg = Message.obtain();
-//                    msg.what = HIDE_ALL_BTNDELETE;
-//                    myFragment_Handler.sendMessage(msg);
-                }
-
-
-                needSpring = false;
-                mDownX = ev.getX();
-                mFirstX = ev.getX();
-                break;
-
-            case MotionEvent.ACTION_UP:
-                Log.e("KONG", "cell up");
-                if (needSpring) {
-                    springBackLocation();
-                } else {
-                    btnWidth = btnDelete.getWidth();
-                    if (leftMoveOffset > btnWidth / 2) {
-                        setBtnDeleteVisible(true);
-                    } else {
-                        setBtnDeleteVisible(false);
-                    }
-                }
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                Log.e("KONG", "cell move");
-                // 移除滑动的消息队列
-                mHandler.removeCallbacksAndMessages(null);
-
-                final float preX = mDownX;
-                final float nowX = ev.getX();
-
-                isPull = nowX - mFirstX > 0;
-
-                int deltaX = (int) ((preX - nowX) / 2.5);
-
-                mDownX = nowX;
-
-                // 当滚动到最上或者最下时就不会再滚动，这时移动布局
-                if (isNeedMove()) {
-                    Log.e("KONG", "set true");
-                    needSpring = true;
-                    // 保存正常的布局位置
-                    if (normal.isEmpty()) {
-                        normal.set(childView.getLeft(), childView.getTop(), childView.getRight(), childView.getBottom());
-                        return;
-                    }
-                    // 移动布局
-                    childView.layout(childView.getLeft() - deltaX, childView.getTop(),
-                            childView.getRight() - deltaX, childView.getBottom());
-                }
-                break;
-
-            default:
-                break;
-        }
-
     }
 
     /**

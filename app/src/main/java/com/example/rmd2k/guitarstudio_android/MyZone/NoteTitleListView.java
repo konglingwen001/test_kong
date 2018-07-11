@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.StringBuilderPrinter;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.HorizontalScrollView;
 import android.widget.ListView;
@@ -64,192 +65,68 @@ public class NoteTitleListView extends ListView {
         super.setOnItemClickListener(listener);
     }
 
-    //    @Override
-//    public boolean onTouchEvent(MotionEvent ev) {
-//        switch (ev.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                Log.e("KONG", "ListView action down");
-//                if (myFragment_Handler != null && checkBtnDeleteVisible()) {
-//                    Log.e("KONG", "myHandler");
-//                    Message msg = Message.obtain();
-//                    msg.what = REFRESH_LIST;
-//                    myFragment_Handler.sendMessage(msg);
-//                    return true;
-//                }
-//                break;
-//        }
-//        return super.onTouchEvent(ev);
-//    }
-
     public void hideAllBtnDelete() {
         SpringBackScrollView svCell;
         for (int i = 0; i < getChildCount(); i++) {
             svCell = getChildAt(i).findViewById(R.id.svCell);
-            svCell.setBtnDeleteVisible(false);
+            if (svCell.isBtnDeleteVisible()) {
+                svCell.setBtnDeleteVisible(false);
+                svCell.isHideByListView = true;
+            }
         }
     }
 
-//    @Override
-//    public boolean onInterceptTouchEvent(MotionEvent ev) {
-//        if (checkBtnDeleteVisible()) {
-//            return false;
-//        }
-//        return super.onInterceptTouchEvent(ev);
-//    }
-
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//
-//        float downPosX = 0;
-//        float downPosY = 0;
-//        float currPosX = 0;
-//        float currPosY = 0;
-//        float offsetX = 0;
-//        float offsetY = 0;
-//
-//        SpringBackScrollView springBackScrollView = null;
-////        int x = (int) event.getX();
-////        int y = (int) event.getY();
-////        //我们想知道当前点击了哪一行
-////        int position = pointToPosition(x, y);
-////        Log.e(TAG, "postion=" + position);
-////        if (position != INVALID_POSITION) {
-////            springBackScrollView = getChildAt(position + getFirstVisiblePosition()).findViewById(R.id.svCell);
-////        }
-//
-//        //我们想知道当前点击了哪一行
-//        int position = pointToPosition((int)event.getX(), (int)event.getY());
-//        //Log.e(TAG, "postion=" + position);
-//        if (position != INVALID_POSITION) {
-//            int pos = position + getFirstVisiblePosition();
-//            springBackScrollView = getChildAt(position + getFirstVisiblePosition()).findViewById(R.id.svCell);
-//        }
-//
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                downPosX = (int) event.getX();
-//                downPosY = (int) event.getY();
-//
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                Log.e("KONG", "listview touch move");
-//                currPosX = event.getX();
-//                currPosY = event.getY();
-//                offsetX = Math.abs(currPosX - downPosX);
-//                offsetY = Math.abs(currPosY - downPosY);
-//
-////                if (offsetX > 5 || offsetY > 5) {
-////                    if (offsetX > offsetY) {
-////                        springBackScrollView.setPressed(false);
-////                        springBackScrollView.cancelPendingInputEvents();
-////                    }
-////                }
-//                break;
-//        }
-//
-//        if (springBackScrollView != null) {
-//            //springBackScrollView.onTouchEvent(event);
-//            //springBackScrollView.onRequestTouchEvent(event);
-//        }
-//
-//        return super.onTouchEvent(event);
-//    }
-
-    /*
-        1.
-     */
-
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return true;
+    }
+
+    SpringBackScrollView springBackScrollView = null;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        //我们想知道当前点击了哪一行
+        int position;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.e("KONG", "ListView action down");
-//                if (myFragment_Handler != null && checkBtnDeleteVisible()) {
-//                    Log.e("KONG", "myHandler");
-//                    Message msg = Message.obtain();
-//                    msg.what = REFRESH_LIST;
-//                    myFragment_Handler.sendMessage(msg);
-//                    return true;
-//                }
-                horizontalSlide = false;
-                downPosX = event.getX();
-                downPosY = event.getY();
-                //break;
-                return false;
-            case MotionEvent.ACTION_MOVE:
-                Log.e("KONG", "ListView action move");
-                if (horizontalSlide) {
+                downPosX = (int) event.getX();
+                downPosY = (int) event.getY();
+
+                position = pointToPosition((int)event.getX(), (int)event.getY());
+                Log.e("KONG", "listview touch down:" + position);
+                if (position != INVALID_POSITION) {
+                    int pos = position + getFirstVisiblePosition();
+                    springBackScrollView = getChildAt(position + getFirstVisiblePosition()).findViewById(R.id.svCell);
+                }
+                if (checkBtnDeleteVisible()) {
+                    hideAllBtnDelete();
                     return false;
                 }
-
+                return true;
+                //break;
+            case MotionEvent.ACTION_MOVE:
+                position = pointToPosition((int)event.getX(), (int)event.getY());
+                Log.e("KONG", "listview touch move:" + position);
                 currPosX = event.getX();
                 currPosY = event.getY();
                 offsetX = Math.abs(currPosX - downPosX);
                 offsetY = Math.abs(currPosY - downPosY);
-                if (offsetX > 5 || offsetY > 5) {
-                    // 当垂直或者水平移动大于5时，开始判断是上下滑动还是左右滑动，并且返回false，不拦截事件
-                    if (offsetX > offsetY) {
-                        // 左右滑动
-                        horizontalSlide = true; // 锁定左右滑动
-                        return false;
-                    } else {
-                        if (!horizontalSlide) {
-                            // 上下滑动
-                            return true;
-                        } else {
-                            // 左右滑动
-                            return false;
-                        }
-                    }
-                }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e("KONG", "ListView action up");
-                currPosX = event.getX();
-                currPosY = event.getY();
-                offsetX = Math.abs(currPosX - downPosX);
-                offsetY = Math.abs(currPosY - downPosY);
-
-                if (offsetX < 5 && offsetY < 5) {
-                    Log.e("KONG", "Clicked");
-                    int position = this.pointToPosition((int)currPosX, (int)currPosY);
-                    setPressed(true);
-                    performItemClick(this, position, 0);
-                    return true;
-                }
-                //break;
-                return false;
+                position = pointToPosition((int)event.getX(), (int)event.getY());
+                Log.e("KONG", "listview touch up:" + position);
+                break;
             case MotionEvent.ACTION_CANCEL:
+                position = pointToPosition((int)event.getX(), (int)event.getY());
+                Log.e("KONG", "listview touch cancel:" + position);
                 break;
         }
-        return super.onInterceptTouchEvent(event);
-    }
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                Log.e("KONG", "-----------------------------------------------1");
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                break;
-//            case MotionEvent.ACTION_UP:
-//                Log.e("KONG", "-----------------------------------------------2");
-//                currPosX = event.getX();
-//                currPosY = event.getY();
-//                offsetX = Math.abs(currPosX - downPosX);
-//                offsetY = Math.abs(currPosY - downPosY);
-//
-//                if (offsetX < 5 && offsetY < 5) {
-//                    Log.e("KONG", "Clicked");
-//                    int position = this.pointToPosition((int)currPosX, (int)currPosY);
-//                    performItemClick(this, position, 0);
-//                    return true;
-//                }
-//                break;
-//        }
-//
-//        return super.onTouchEvent(event);
-//    }
+        if (springBackScrollView != null && !checkBtnDeleteVisible()) {
+            springBackScrollView.onTouchEvent(event);
+        }
+
+        return super.onTouchEvent(event);
+    }
 }

@@ -60,6 +60,7 @@ public class GuitarNoteListAdapter extends BaseAdapter {
         svCell.setHorizontalScrollBarEnabled(false);
         svCell.setMyFragment_Handler(myFragment_Handler);
         svCell.setParentListView(noteTitleListView);
+        svCell.setPosition(position);
         TextView tvNoteTitle = convertView.findViewById(R.id.tvNoteTitle);
         int width = getScreenWidth();
         ViewGroup.LayoutParams lp = tvNoteTitle.getLayoutParams();
