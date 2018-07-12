@@ -1,44 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/noteTitleLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants">
+    android:padding="8dp" >
 
-    <com.example.rmd2k.guitarstudio_android.MyZone.SpringBackScrollView
-        android:id="@+id/svCell"
+    <TextView
+        android:id="@+id/tvNoteTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="name"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvNoteTitle"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView"
-                tools:layout_editor_absoluteX="36dp"
-                tools:layout_editor_absoluteY="61dp" />
-
-            <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:text="Button"
-                tools:layout_editor_absoluteX="53dp"
-                tools:layout_editor_absoluteY="159dp" />
-        </LinearLayout>
-    </com.example.rmd2k.guitarstudio_android.MyZone.SpringBackScrollView>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

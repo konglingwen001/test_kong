@@ -2,29 +2,26 @@ package com.example.rmd2k.guitarstudio_android.MyZone;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.Gravity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
-import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
+import com.example.rmd2k.guitarstudio_android.MyZone.SwipeMenuListView.SwipeMenu;
+import com.example.rmd2k.guitarstudio_android.MyZone.SwipeMenuListView.SwipeMenuCreator;
+import com.example.rmd2k.guitarstudio_android.MyZone.SwipeMenuListView.SwipeMenuItem;
+import com.example.rmd2k.guitarstudio_android.MyZone.SwipeMenuListView.SwipeMenuListView;
 import com.example.rmd2k.guitarstudio_android.R;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyFragment extends Fragment {
@@ -37,12 +34,13 @@ public class MyFragment extends Fragment {
     Context mContext;
     NotesModel notesModel;
 
-    NoteTitleListView lstGuitarNotes;
     Button btnCreateGuitarNotes;
     GuitarNoteListAdapter adapter;
-    private MyHandler myHandler = null;
 
     boolean flag = true;
+
+    private List<ApplicationInfo> mAppList;
+    private SwipeMenuListView lstGuitarNotes;
 
     public MyFragment(){}
 
@@ -51,7 +49,6 @@ public class MyFragment extends Fragment {
         super.onCreate(savedInstanceState);
         notesModel = NotesModel.getInstance(this.getActivity().getApplicationContext());
         mContext = this.getActivity().getApplicationContext();
-        myHandler = new MyHandler(this);
     }
 
     @Override
@@ -60,124 +57,109 @@ public class MyFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         lstGuitarNotes = view.findViewById(R.id.lstGuitarNotes);
-        lstGuitarNotes.setMyFragment_Handler(myHandler);
+
+        mAppList = getActivity().getPackageManager().getInstalledApplications(0);
 
         notesModel.copyAssetFilesToFileDir(this.getActivity());
-
         notesModel.reloadGuitarNotesFiles();
-
-        lstGuitarNotes.setOnItemClickListener(itemClickListener);
-        lstGuitarNotes.setLongClickable(false);
-        //lstGuitarNotes.setOnItemLongClickListener(itemLongClickListener);
-        adapter = new GuitarNoteListAdapter(getContext(), myHandler, lstGuitarNotes);
+        adapter = new GuitarNoteListAdapter(getContext());
         lstGuitarNotes.setAdapter(adapter);
 
-        btnCreateGuitarNotes = view.findViewById(R.id.btnCreateGuitarNotes);
-        btnCreateGuitarNotes.setOnClickListener(new View.OnClickListener() {
+        // step 1. create a MenuCreator
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+
             @Override
-            public void onClick(View v) {
-                View cell = lstGuitarNotes.getChildAt(0);
-                HorizontalScrollView svCell = cell.findViewById(R.id.svCell);
-                Button btnDelete = svCell.findViewById(R.id.btnDelete);
-                if (flag) {
-                    Log.e("KONG", "move left");
-                    svCell.smoothScrollBy(btnDelete.getWidth(), 0);
-                } else {
-                    Log.e("KONG", "move right");
-                    svCell.smoothScrollBy(-btnDelete.getWidth(), 0);
-                }
-                flag = !flag;
+            public void create(SwipeMenu menu) {
+
+                // create "delete" item
+                SwipeMenuItem deleteItem = new SwipeMenuItem(
+                        getActivity().getApplicationContext());
+                // set item background
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+                        0x3F, 0x25)));
+                // set item width
+                deleteItem.setWidth(dp2px(90));
+                // set item title
+                deleteItem.setTitle("Delete");
+                // set item title fontsize
+                deleteItem.setTitleSize(18);
+                // set item title font color
+                deleteItem.setTitleColor(Color.WHITE);
+                // add to menu
+                menu.addMenuItem(deleteItem);
             }
-        });
+        };
+        // set creator
+        lstGuitarNotes.setMenuCreator(creator);
+
+        // step 2. listener item click event
+        lstGuitarNotes.setOnMenuItemClickListener(onMenuItemClickListener);
+
+        // set SwipeListener
+        lstGuitarNotes.setOnSwipeListener(onSwipeListener);
+
+        // set MenuStateChangeListener
+        lstGuitarNotes.setOnMenuStateChangeListener(onMenuStateChangeListener);
 
         return view;
     }
 
-    public static class MyHandler extends Handler {
-        private final WeakReference<MyFragment> mFragment;
-
-        private MyHandler(MyFragment mFragment) {
-            this.mFragment = new WeakReference<>(mFragment);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            MyFragment activity = mFragment.get();
-            switch (msg.what) {
-                case HIDE_ALL_BTNDELETE:
-                    activity.lstGuitarNotes.hideAllBtnDelete();
-                    break;
-                case SET_CLICKABLE:
-                    if (msg.arg1 == CLICKABLE) {
-                        Log.i("KONG", "clickable");
-                        //activity.lstGuitarNotes.setFocusable(true);
-                        //activity.lstGuitarNotes.setClickable(true);
-                        activity.lstGuitarNotes.setOnItemClickListener(activity.itemClickListener);
-                    } else {
-                        Log.i("KONG", "not clickable");
-                        //activity.lstGuitarNotes.setFocusable(false);
-                        //activity.lstGuitarNotes.setClickable(false);
-                        activity.lstGuitarNotes.setOnItemClickListener(null);
-                    }
-                    break;
-            }
+    private void delete(ApplicationInfo item) {
+        // delete app
+        try {
+            Intent intent = new Intent(Intent.ACTION_DELETE);
+            intent.setData(Uri.fromParts("package", item.packageName, null));
+            startActivity(intent);
+        } catch (Exception e) {
         }
     }
 
-    AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+    SwipeMenuListView.OnMenuItemClickListener onMenuItemClickListener = new SwipeMenuListView.OnMenuItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Toast.makeText(mContext, "onItemClick", Toast.LENGTH_SHORT).show();
-//            Intent intent = new Intent();
-//            intent.putExtra("fileName", notesModel.getGuitarNotesFile(position));
-//            intent.setClass(getActivity(), GuitarNoteViewActivity.class);
-//            startActivity(intent);
+        public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+            ApplicationInfo item = mAppList.get(position);
+            switch (index) {
+                case 0:
+                    // delete
+                    Toast.makeText(mContext, "delete", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            return false;
         }
     };
 
-    List<String> list;
-
-    AdapterView.OnItemLongClickListener itemLongClickListener = new AdapterView.OnItemLongClickListener() {
+    SwipeMenuListView.OnSwipeListener onSwipeListener = new SwipeMenuListView.OnSwipeListener() {
 
         @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            list = new ArrayList<>();
-            list.add("删除");
-            list.add("重命名");
-            ListView listView = new ListView(getContext());
-            listView.setBackgroundColor(Color.GRAY);
-            listView.setAdapter(new PopupAdapter(getContext(), list));
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.i("TAG", list.get(position));
-                }
-            });
+        public void onSwipeStart(int position) {
+            // swipe start
+        }
 
-            PopupWindow popupWindow = new PopupWindow(listView, 400, 400);
-            popupWindow.setFocusable(true);
-            popupWindow.setOutsideTouchable(true);
-            WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-            int xPos = windowManager.getDefaultDisplay().getWidth() / 2 - popupWindow.getWidth() / 2;
-            popupWindow.showAtLocation(parent, Gravity.NO_GRAVITY, xPos, 300);
-            return true;
+        @Override
+        public void onSwipeEnd(int position) {
+            // swipe end
         }
     };
+
+    SwipeMenuListView.OnMenuStateChangeListener onMenuStateChangeListener = new SwipeMenuListView.OnMenuStateChangeListener() {
+        @Override
+        public void onMenuOpen(int position) {
+        }
+
+        @Override
+        public void onMenuClose(int position) {
+        }
+    };
+
+    private int dp2px(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
+    }
 
     @Override
     public void onStart() {
         super.onStart();
         adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
 }
