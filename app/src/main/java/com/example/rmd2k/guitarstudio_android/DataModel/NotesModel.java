@@ -562,6 +562,12 @@ public class NotesModel {
         return !oldGuitarNotes.equals(rootNoteDic);
     }
 
+
+    public void deleteGuitarNotes(String guitarNoteName, int position) {
+        guitarNotesFiles.remove(position);
+        mContext.deleteFile(guitarNoteName + ".plist");
+    }
+
     public void saveGuitarNotes(String guitarNoteName) {
 
         parseToPlist(guitarNoteName);

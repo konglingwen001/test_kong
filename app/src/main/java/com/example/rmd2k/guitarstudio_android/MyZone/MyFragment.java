@@ -37,9 +37,6 @@ public class MyFragment extends Fragment {
     Button btnCreateGuitarNotes;
     GuitarNoteListAdapter adapter;
 
-    boolean flag = true;
-
-    private List<ApplicationInfo> mAppList;
     private SwipeMenuListView lstGuitarNotes;
 
     public MyFragment(){}
@@ -57,8 +54,7 @@ public class MyFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_my, container, false);
         lstGuitarNotes = view.findViewById(R.id.lstGuitarNotes);
-
-        mAppList = getActivity().getPackageManager().getInstalledApplications(0);
+        btnCreateGuitarNotes = view.findViewById(R.id.btnCreateGuitarNotes);
 
         notesModel.copyAssetFilesToFileDir(this.getActivity());
         notesModel.reloadGuitarNotesFiles();
@@ -72,8 +68,7 @@ public class MyFragment extends Fragment {
             public void create(SwipeMenu menu) {
 
                 // create "delete" item
-                SwipeMenuItem deleteItem = new SwipeMenuItem(
-                        getActivity().getApplicationContext());
+                SwipeMenuItem deleteItem = new SwipeMenuItem(mContext);
                 // set item background
                 deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
                         0x3F, 0x25)));
@@ -101,26 +96,27 @@ public class MyFragment extends Fragment {
         // set MenuStateChangeListener
         lstGuitarNotes.setOnMenuStateChangeListener(onMenuStateChangeListener);
 
+        btnCreateGuitarNotes.setOnClickListener(onClickListener);
+
         return view;
     }
 
-    private void delete(ApplicationInfo item) {
-        // delete app
-        try {
-            Intent intent = new Intent(Intent.ACTION_DELETE);
-            intent.setData(Uri.fromParts("package", item.packageName, null));
-            startActivity(intent);
-        } catch (Exception e) {
+    View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // TODO
         }
-    }
+    };
 
     SwipeMenuListView.OnMenuItemClickListener onMenuItemClickListener = new SwipeMenuListView.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-            ApplicationInfo item = mAppList.get(position);
+            String guitarNotes = notesModel.getGuitarNotesFile(position);
             switch (index) {
                 case 0:
                     // delete
+                    notesModel.deleteGuitarNotes(guitarNotes, position);
+                    adapter.notifyDataSetChanged();
                     Toast.makeText(mContext, "delete", Toast.LENGTH_SHORT).show();
                     break;
             }
