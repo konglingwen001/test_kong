@@ -8,31 +8,23 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.example.rmd2k.guitarstudio_android.DataModel.BarNoData;
 import com.example.rmd2k.guitarstudio_android.DataModel.EditNoteInfo;
-import com.example.rmd2k.guitarstudio_android.DataModel.Note;
-import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.NoteEditView;
 import com.example.rmd2k.guitarstudio_android.R;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
 public class GuitarNoteViewActivity extends AppCompatActivity {
 

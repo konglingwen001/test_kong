@@ -5,10 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
-import com.example.rmd2k.guitarstudio_android.MyZone.SwipeMenuListView.SwipeMenuListView;
 import com.example.rmd2k.guitarstudio_android.R;
 
 /**
@@ -43,12 +43,27 @@ public class GuitarNoteListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.note_title_list_view_cell, null);
         }
-        TextView tvNoteTitle = convertView.findViewById(R.id.tvNoteTitle);
+
+        MySwipeLayout mySwipeLayout = (MySwipeLayout)convertView;
+
+        TextView tvNoteTitle = mySwipeLayout.findViewById(R.id.tvNoteTitle);
         tvNoteTitle.setText(notesModel.getGuitarNotesFile(position));
+        Button btnDelete = mySwipeLayout.findViewById(R.id.btnDelete);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                notesModel.deleteGuitarNotes(notesModel.getGuitarNotesFile(position), position);
+                notifyDataSetChanged();
+            }
+        });
+
+        if (mySwipeLayout.isBtnDeleteVisible) {
+            mySwipeLayout.hideDeleteButton();
+        }
 
         return convertView;
     }

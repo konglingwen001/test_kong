@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.rmd2k.guitarstudio_android.MyZone.MyFragment">
+    tools:context="com.example.rmd2k.guitarstudio_android.MyZone.MyFragment" >
 
-    <com.example.rmd2k.guitarstudio_android.MyZone.SwipeMenuListView.SwipeMenuListView
+    <com.example.rmd2k.guitarstudio_android.MyZone.MySwipeListView
         android:id="@+id/lstGuitarNotes"
         android:layout_width="match_parent"
         android:layout_height="0dp"

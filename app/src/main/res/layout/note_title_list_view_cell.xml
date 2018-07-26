@@ -1,14 +1,15 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.rmd2k.guitarstudio_android.MyZone.MySwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp" >
+    android:padding="8dp"
+    android:descendantFocusability="blocksDescendants">
 
     <TextView
         android:id="@+id/tvNoteTitle"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:text="name"
         android:textColor="@android:color/white"
         android:textSize="18sp"
@@ -17,4 +18,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvNoteTitle"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</com.example.rmd2k.guitarstudio_android.MyZone.MySwipeLayout>
