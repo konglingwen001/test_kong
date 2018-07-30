@@ -11,6 +11,7 @@ import com.example.rmd2k.guitarstudio_android.Musiclibrary.MusicLibraryFragment;
 import com.example.rmd2k.guitarstudio_android.MyZone.MyFragment;
 import com.example.rmd2k.guitarstudio_android.MyZone.MyFragmentPagerAdapter;
 import com.example.rmd2k.guitarstudio_android.MyZone.MyViewPager;
+import com.example.rmd2k.guitarstudio_android.Tools.ToolsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(new MyFragment());
         fragments.add(new MusicLibraryFragment());
-        fragments.add(new MyFragment());
+        fragments.add(new ToolsFragment());
         fragments.add(new MyFragment());
 
         String myZone = getText(R.string.navi_myZone).toString();
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), fragments, new String[]{myZone, musicLibrary, tool, setting});
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.getTabAt(2).select();
     }
-    
+
 }
