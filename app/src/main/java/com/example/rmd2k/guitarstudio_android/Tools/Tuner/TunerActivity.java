@@ -74,26 +74,28 @@ public class TunerActivity extends AppCompatActivity {
         int stringNo = Integer.parseInt(view.getTag().toString());
         tvCurrNote.setText(tunerNotes[stringNo - 1]);
         currStandardFrequency = standardFrequencies[stringNo - 1];
-//        switch (stringNo) {
-//            case 1:
-//                btnE1.setBackgroundColor(Color.RED);
-//                break;
-//            case 2:
-//                btnB.setBackgroundColor(Color.RED);
-//                break;
-//            case 3:
-//                btnG.setBackgroundColor(Color.RED);
-//                break;
-//            case 4:
-//                btnD.setBackgroundColor(Color.RED);
-//                break;
-//            case 5:
-//                btnA.setBackgroundColor(Color.RED);
-//                break;
-//            case 6:
-//                btnE.setBackgroundColor(Color.RED);
-//                break;
-//        }
+/*
+switch (stringNo) {
+case 1:
+btnE1.setBackgroundColor(Color.RED);
+break;
+case 2:
+btnB.setBackgroundColor(Color.RED);
+break;
+case 3:
+btnG.setBackgroundColor(Color.RED);
+break;
+case 4:
+btnD.setBackgroundColor(Color.RED);
+break;
+case 5:
+btnA.setBackgroundColor(Color.RED);
+break;
+case 6:
+btnE.setBackgroundColor(Color.RED);
+break;
+}
+*/
     }
 
     private void startTuner() {
