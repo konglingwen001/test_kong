@@ -12,10 +12,12 @@
         android:layout_height="109dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tvCurrNote" />
 
     <Button
         android:id="@+id/btnE"
+        android:tag="6"
+        android:onClick="selectTunerNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
@@ -26,6 +28,8 @@
 
     <Button
         android:id="@+id/btnA"
+        android:tag="5"
+        android:onClick="selectTunerNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -35,6 +39,8 @@
 
     <Button
         android:id="@+id/btnD"
+        android:tag="4"
+        android:onClick="selectTunerNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -44,6 +50,8 @@
 
     <Button
         android:id="@+id/btnG"
+        android:tag="3"
+        android:onClick="selectTunerNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -53,6 +61,8 @@
 
     <Button
         android:id="@+id/btnB"
+        android:tag="2"
+        android:onClick="selectTunerNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="B"
@@ -61,6 +71,8 @@
 
     <Button
         android:id="@+id/btnE1"
+        android:tag="1"
+        android:onClick="selectTunerNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="E"
@@ -83,4 +95,17 @@
         android:text="Auto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnE1" />
+
+    <TextView
+        android:id="@+id/tvCurrNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="E"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
