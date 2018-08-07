@@ -18,6 +18,9 @@ import com.example.rmd2k.guitarstudio_android.R;
 
 public class TunerActivity extends AppCompatActivity {
 
+    private final static double PI = 3.141592654;
+
+    InstrumentPanelView instrumentPanelView;
     TextView tvCurrNote;
     Button btnE;
     Button btnA;
@@ -46,6 +49,7 @@ public class TunerActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        instrumentPanelView = findViewById(R.id.instrumentPanelView);
         tvCurrNote = findViewById(R.id.tvCurrNote);
         btnE = findViewById(R.id.btnE);
         btnA = findViewById(R.id.btnA);
@@ -109,39 +113,64 @@ break;
                 audioRecord.startRecording();
                 isRecording = true;
 
-                int audioTrackMinBufferSize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
-                final AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, audioTrackMinBufferSize, AudioTrack.MODE_STREAM);
-                audioTrack.play();
+//                int audioTrackMinBufferSize = AudioTrack.getMinBufferSize(44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+//                final AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, audioTrackMinBufferSize, AudioTrack.MODE_STREAM);
+//                audioTrack.play();
 
-                final int maxCR = Visualizer.getMaxCaptureRate();
-                Visualizer visualizer = new Visualizer(audioTrack.getAudioSessionId());
-                visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-                visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-                    @Override
-                    public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
-                        //Log.e("KONG", "aaa");
-                    }
-
-                    @Override
-                    public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
-                        //Log.e("KONG", "aaa:" + fft.length);
-                    }
-                }, maxCR / 2, true, true);
-                visualizer.setEnabled(true);
+//                final int maxCR = Visualizer.getMaxCaptureRate();
+//                Visualizer visualizer = new Visualizer(audioTrack.getAudioSessionId());
+//                visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+//                visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+//                    @Override
+//                    public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
+//                        //Log.e("KONG", "aaa");
+//                    }
+//
+//                    @Override
+//                    public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
+//                        //Log.e("KONG", "aaa:" + fft.length);
+//                    }
+//                }, maxCR / 2, true, true);
+//                visualizer.setEnabled(true);
 
                 while (isRecording) {
                     int bufferReadReault = audioRecord.read(buffer, 0, audioRecordMinBufferSize);
-                    audioTrack.write(buffer, 0, bufferReadReault);
+                    Log.e("KONG", "count:" + bufferReadReault);
+                    short[] fft = fft(buffer, bufferReadReault);
 
-                    for (int i = 0; i < bufferReadReault; i++) {
-                        //Log.i("KONG", String.valueOf(buffer[i]));
-                    }
+//                    for (int i = 0; i < bufferReadReault; i++) {
+//                        Log.i("KONG", String.valueOf(buffer[i]));
+//                    }
+
+//                    for (int i = 0; i < 512; i++) {
+//                        Log.i("KONG", String.valueOf(fft[i]));
+//                    }
+
+                    instrumentPanelView.setFFT(fft);
+                    instrumentPanelView.invalidate();
+                    //audioTrack.write(buffer, 0, bufferReadReault);
+
+
                 }
                 audioRecord.stop();
-                audioTrack.stop();
-                visualizer.setEnabled(false);
+                //audioTrack.stop();
+                //visualizer.setEnabled(false);
             }
         }).start();
+    }
+
+    private short[] fft(short[] data, int count) {
+        short[] fft = new short[512];
+        for (int hz = 0; hz < 512; hz++) {
+            fft[hz] = 0;
+            for (int i = 0; i < count; i++) {
+                fft[hz] += data[i] * Math.exp(2 * Math.PI * Math.sqrt(-1) * hz);
+                Log.e("KONG", "fft:" + data[i]);
+            }
+            fft[hz] /= count;
+        }
+
+        return fft;
     }
 
     @Override

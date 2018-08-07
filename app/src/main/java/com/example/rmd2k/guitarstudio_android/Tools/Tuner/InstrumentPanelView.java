@@ -15,6 +15,8 @@ public class InstrumentPanelView extends View {
 
     private static final int SCALE_NUM = 50;
 
+    private short[] fft = new short[0];
+
     private NotesModel notesModel;
     private Paint mPaint;
 
@@ -38,9 +40,22 @@ public class InstrumentPanelView extends View {
         mPaint = new Paint();
     }
 
+    public void setFFT(short[] fft) {
+        this.fft = fft;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
-        drawScales(canvas);
+        //drawScales(canvas);
+        drawFFT(canvas);
+    }
+
+    private void drawFFT(Canvas canvas) {
+        mPaint.setColor(Color.RED);
+        mPaint.setStrokeWidth(1);
+        for (int i = 0; i < fft.length - 1; i++) {
+            canvas.drawLine(i, fft[i], i + 1, fft[i + 1], mPaint);
+        }
     }
 
     private void drawScales(Canvas canvas) {
