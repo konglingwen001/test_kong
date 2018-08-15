@@ -2,11 +2,8 @@ package com.example.rmd2k.guitarstudio_android.Tools.Tuner;
 
 import android.graphics.Color;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.media.audiofx.Visualizer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -136,7 +133,7 @@ break;
                 while (isRecording) {
                     int bufferReadReault = audioRecord.read(buffer, 0, audioRecordMinBufferSize);
                     Log.e("KONG", "count:" + bufferReadReault);
-                    short[] fft = fft(buffer, bufferReadReault);
+                    byte[] fft = FFT.fft(buffer);
 
 //                    for (int i = 0; i < bufferReadReault; i++) {
 //                        Log.i("KONG", String.valueOf(buffer[i]));
@@ -159,19 +156,19 @@ break;
         }).start();
     }
 
-    private short[] fft(short[] data, int count) {
-        short[] fft = new short[512];
-        for (int hz = 0; hz < 512; hz++) {
-            fft[hz] = 0;
-            for (int i = 0; i < count; i++) {
-                fft[hz] += data[i] * Math.exp(2 * Math.PI * Math.sqrt(-1) * hz);
-                Log.e("KONG", "fft:" + data[i]);
-            }
-            fft[hz] /= count;
-        }
-
-        return fft;
-    }
+//    private short[] fft(short[] data, int count) {
+//        short[] fft = new short[512];
+//        for (int hz = 0; hz < 512; hz++) {
+//            fft[hz] = 0;
+//            for (int i = 0; i < count; i++) {
+//                fft[hz] += data[i] * Math.exp(2 * Math.PI * Math.sqrt(-1) * hz);
+//                Log.e("KONG", "fft:" + data[i]);
+//            }
+//            fft[hz] /= count;
+//        }
+//
+//        return fft;
+//    }
 
     @Override
     protected void onDestroy() {
