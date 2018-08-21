@@ -12,7 +12,7 @@ extern "C" {
  * Method:    fft
  * Signature: ([S)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_com_example_rmd2k_guitarstudio_1android_Tools_Tuner_FFT_fft
+JNIEXPORT jshortArray JNICALL Java_com_example_rmd2k_guitarstudio_1android_Tools_Tuner_FFT_fft
   (JNIEnv *, jclass, jshortArray);
 
 #ifdef __cplusplus

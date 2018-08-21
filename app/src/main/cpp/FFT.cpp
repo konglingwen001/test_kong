@@ -5,13 +5,15 @@
 #include <complex>
 #include <cstdio>
 
+using namespace std;
+
 void fft2 (complex<double>* X, int N);
 void separate (complex<double>* a, int n);
 
-JNIEXPORT jbyteArray JNICALL Java_com_example_rmd2k_guitarstudio_1android_Tools_Tuner_FFT_fft
+JNIEXPORT jshortArray JNICALL Java_com_example_rmd2k_guitarstudio_1android_Tools_Tuner_FFT_fft
   (JNIEnv *env, jclass jObj, jshortArray array) {
-    jshort *shortArray = (*env)->GetShortArrayElements(env, array, NULL);
-    jint length = (*env)->GetArrayLength(env, array);
+    jshort *shortArray = env->GetShortArrayElements(array, NULL);
+    jint length = env->GetArrayLength(array);
 
     complex<double>* b = new complex<double>[length / 2];
     for (int i = 0; i < length; i++) {
@@ -21,15 +23,16 @@ JNIEXPORT jbyteArray JNICALL Java_com_example_rmd2k_guitarstudio_1android_Tools_
     }
     fft2(b, length);
 
-    (*env)->ReleaseShortArrayElements(array, shortArray, 0);
+    env->ReleaseShortArrayElements(array, shortArray, 0);
 
-    byte[] fftResult = new byte[length];
+    short *fftResult = new short[length];
     for (int i = 0; i < length; i++) {
-        fftResult[i] = b[i].real;
+        fftResult[i] = (short) b[i].real();
     }
-    jbyteArray array = (*env)->NewByteArray(env, length);
-    (*env)->SetByteArrayRegion(env, array, 0, length, fftResult);
-    return array;
+    jshortArray resultArray = env->NewShortArray(length);
+    env->SetShortArrayRegion(resultArray, 0, length, fftResult);
+    delete b;
+    return resultArray;
   }
 
   void separate (complex<double>* a, int n) {

@@ -5,5 +5,5 @@ public class FFT {
         System.loadLibrary("FFT");
     }
 
-    public static native byte[] fft(short[] fftData);
+    public static native short[] fft(short[] fftData);
 }

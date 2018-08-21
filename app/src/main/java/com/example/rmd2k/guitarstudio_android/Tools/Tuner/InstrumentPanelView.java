@@ -15,7 +15,7 @@ public class InstrumentPanelView extends View {
 
     private static final int SCALE_NUM = 50;
 
-    private byte[] fft = new byte[0];
+    private short[] fft = new short[0];
 
     private NotesModel notesModel;
     private Paint mPaint;
@@ -40,7 +40,7 @@ public class InstrumentPanelView extends View {
         mPaint = new Paint();
     }
 
-    public void setFFT(byte[] fft) {
+    public void setFFT(short[] fft) {
         this.fft = fft;
     }
 
