@@ -16,6 +16,8 @@ public class InstrumentPanelView extends View {
     private static final int SCALE_NUM = 50;
 
     private short[] fft = new short[0];
+    private double currFrequency = 0;
+    private double currStandardFrequency = 0;
 
     private NotesModel notesModel;
     private Paint mPaint;
@@ -44,10 +46,38 @@ public class InstrumentPanelView extends View {
         this.fft = fft;
     }
 
+    public void setCurrFrequency(double currFrequency) {
+        this.currFrequency = currFrequency;
+    }
+
+    public void setCurrStandardFrequency(double currStandardFrequency) {
+        this.currStandardFrequency = currStandardFrequency;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
-        //drawScales(canvas);
-        drawFFT(canvas);
+        drawScales(canvas);
+
+        drawCurrFrequency(canvas);
+
+        //drawFFT(canvas);
+    }
+
+    private void drawCurrFrequency(Canvas canvas) {
+        mPaint.setColor(Color.WHITE);
+        mPaint.setStrokeWidth(2);
+
+        int width = getWidth();
+        int height = getHeight();
+        int startInterval = notesModel.dp2px(20);
+        int topInterval = notesModel.dp2px(20);
+        int bottomInterval = notesModel.dp2px(20);
+
+        if (currFrequency <= currStandardFrequency - 15) {
+            canvas.drawLine(startInterval, height - bottomInterval, startInterval, topInterval, mPaint);
+        } else if (currFrequency >= currStandardFrequency + 15) {
+            canvas.drawLine(width - startInterval, height - bottomInterval, width - startInterval, topInterval, mPaint);
+        }
     }
 
     private void drawFFT(Canvas canvas) {

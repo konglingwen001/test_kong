@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import com.example.rmd2k.guitarstudio_android.R;
 
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+import edu.emory.mathcs.jtransforms.fft.FloatFFT_2D;
+
 public class TunerActivity extends AppCompatActivity {
 
     private final static double PI = 3.141592654;
@@ -75,6 +78,7 @@ public class TunerActivity extends AppCompatActivity {
         int stringNo = Integer.parseInt(view.getTag().toString());
         tvCurrNote.setText(tunerNotes[stringNo - 1]);
         currStandardFrequency = standardFrequencies[stringNo - 1];
+        instrumentPanelView.setCurrStandardFrequency(currStandardFrequency);
 /*
 switch (stringNo) {
 case 1:
@@ -111,21 +115,40 @@ break;
                 isRecording = true;
 
                 while (isRecording) {
-                    int bufferReadReault = audioRecord.read(buffer, 0, audioRecordMinBufferSize);
-                    Log.e("KONG", "count:" + bufferReadReault);
-                    short[] fft = FFT.fft(buffer);
+                    int N = audioRecord.read(buffer, 0, audioRecordMinBufferSize);
 
-//                    for (int i = 0; i < bufferReadReault; i++) {
-//                        Log.i("KONG", String.valueOf(buffer[i]));
-//                    }
+                    double real;
+                    double image;
+                    double fftData[] = new double[N * 2];
+                    double magnitude[] = new double[N / 2];
+                    for (int i = 0; i < N - 1; i++) {
+                        fftData[2 * i] = buffer[i];
+                        fftData[2 * i + 1] = 0;
+                    }
 
-//                    for (int i = 0; i < 512; i++) {
-//                        Log.i("KONG", String.valueOf(fft[i]));
-//                    }
+                    DoubleFFT_1D fft = new DoubleFFT_1D(N);
+                    fft.complexForward(fftData);
 
-                    instrumentPanelView.setFFT(fft);
+                    for (int i = 0; i < N / 2 - 1; i++) {
+                        real = fftData[2 * i];
+                        image = fftData[2 * i + 1];
+                        magnitude[i] = Math.sqrt(real * real + image * image);
+                    }
+
+                    double max_magnitude = -999999999;
+                    int max_index = -1;
+                    for (int i = 0; i< N / 2 - 1; i++) {
+                        if (magnitude[i] > max_magnitude) {
+                            max_magnitude = magnitude[i];
+                            max_index = i;
+                        }
+                    }
+
+                    double dominantFreq = max_index * 44100 / N;
+                    Log.e("KONG", "Frequency:" + dominantFreq);
+
+                    instrumentPanelView.setCurrFrequency(dominantFreq);
                     instrumentPanelView.invalidate();
-                    //audioTrack.write(buffer, 0, bufferReadReault);
 
                 }
                 audioRecord.stop();
