@@ -14,10 +14,13 @@ import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 public class InstrumentPanelView extends View {
 
     private static final int SCALE_NUM = 50;
+    private static final int TEXT_SIZE = 50;
+
+    double[] standardFrequencies = { 329.6276, 246.9517, 195.9977, 146.8324, 110.0000, 82.4069 };
 
     private short[] fft = new short[0];
     private double currFrequency = 0;
-    private double currStandardFrequency = 0;
+    private int currStringNo = 6;
 
     private NotesModel notesModel;
     private Paint mPaint;
@@ -50,8 +53,8 @@ public class InstrumentPanelView extends View {
         this.currFrequency = currFrequency;
     }
 
-    public void setCurrStandardFrequency(double currStandardFrequency) {
-        this.currStandardFrequency = currStandardFrequency;
+    public void setCurrStringNo(int stringNo) {
+        this.currStringNo = stringNo;
     }
 
     @Override
@@ -72,12 +75,23 @@ public class InstrumentPanelView extends View {
         int startInterval = notesModel.dp2px(20);
         int topInterval = notesModel.dp2px(20);
         int bottomInterval = notesModel.dp2px(20);
+        double interval = ((double)width - (double)startInterval * 2) / (double)SCALE_NUM;
 
-        if (currFrequency <= currStandardFrequency - 15) {
-            canvas.drawLine(startInterval, height - bottomInterval, startInterval, topInterval, mPaint);
-        } else if (currFrequency >= currStandardFrequency + 15) {
-            canvas.drawLine(width - startInterval, height - bottomInterval, width - startInterval, topInterval, mPaint);
+        int posX = 0;
+        if (currFrequency <= standardFrequencies[currStringNo - 1] - 25) {
+            posX = startInterval;
+        } else if (currFrequency >= standardFrequencies[currStringNo - 1] + 25) {
+            posX = width - startInterval;
+        } else {
+            posX = width / 2 + (int)((currFrequency - standardFrequencies[currStringNo - 1]) * interval);
         }
+        canvas.drawLine(posX, height - bottomInterval, posX, topInterval, mPaint);
+
+        String frequencyStr = String.format("%.1f", currFrequency);
+        Rect textSize = new Rect();
+        mPaint.setTextSize(TEXT_SIZE);
+        mPaint.getTextBounds(frequencyStr, 0, frequencyStr.length(), textSize);
+        canvas.drawText(frequencyStr, posX - textSize.width() / 2, height, mPaint);
     }
 
     private void drawFFT(Canvas canvas) {
@@ -90,8 +104,13 @@ public class InstrumentPanelView extends View {
 
     private void drawScales(Canvas canvas) {
 
+        int startInterval = notesModel.dp2px(20);
+        int bottomInterval = notesModel.dp2px(20);
         int width = getWidth();
-        int height = getHeight();
+        int height = getHeight() - bottomInterval;
+        int scaleHeight = notesModel.dp2px(10);
+        double interval = ((double)width - (double)startInterval * 2) / (double)SCALE_NUM;
+
         mPaint.setColor(Color.GRAY);
         mPaint.setStrokeWidth(2);
         canvas.drawLine(0, 1, width, 1, mPaint);
@@ -102,10 +121,6 @@ public class InstrumentPanelView extends View {
 
         int x;
         int offsetY;
-        int startInterval = notesModel.dp2px(20);
-        int bottomInterval = notesModel.dp2px(20);
-        int scaleHeight = notesModel.dp2px(10);
-        double interval = ((double)width - (double)startInterval * 2) / (double)SCALE_NUM;
         int value;
         String text;
         for (int i = 0; i <= SCALE_NUM; i++) {
@@ -115,9 +130,9 @@ public class InstrumentPanelView extends View {
                 value = (i / 5 - 5) * 30;
                 Rect textSize = new Rect();
                 text = value + "";
-                mPaint.setTextSize(25);
+                mPaint.setTextSize(TEXT_SIZE);
                 mPaint.getTextBounds(text, 0, text.length(), textSize);
-                canvas.drawText(text, x - textSize.width() / 2, height - textSize.height(), mPaint);
+                canvas.drawText(text, x - textSize.width() / 2, height, mPaint);
             } else {
                 offsetY = 0;
             }
