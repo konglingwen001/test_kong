@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.rmd2k.guitarstudio_android.R;
+import com.example.rmd2k.guitarstudio_android.Tools.Game.GameActivity;
 import com.example.rmd2k.guitarstudio_android.Tools.Tuner.TunerActivity;
 
 /**
@@ -24,6 +25,7 @@ import com.example.rmd2k.guitarstudio_android.Tools.Tuner.TunerActivity;
 public class ToolsFragment extends Fragment {
 
     Button btnTuner;
+    Button btnGame;
 
     public ToolsFragment() {
         // Required empty public constructor
@@ -40,15 +42,28 @@ public class ToolsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tools, container, false);
         btnTuner = view.findViewById(R.id.btnTuner);
-        btnTuner.setOnClickListener(onClickListener);
+        btnTuner.setOnClickListener(onTunerClickListener);
+
+        btnGame = view.findViewById(R.id.btnGame);
+        btnGame.setOnClickListener(onGameClickListener);
+
         return view;
     }
 
-    View.OnClickListener onClickListener = new View.OnClickListener() {
+    View.OnClickListener onTunerClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent();
             intent.setClass(getActivity(), TunerActivity.class);
+            startActivity(intent);
+        }
+    };
+
+    View.OnClickListener onGameClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent();
+            intent.setClass(getActivity(), GameActivity.class);
             startActivity(intent);
         }
     };

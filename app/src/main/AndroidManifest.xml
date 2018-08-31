@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.rmd2k.guitarstudio_android">
-    
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -27,8 +27,9 @@
             android:name=".MyZone.GuitarNoteViewActivity"
             android:label=""
             android:parentActivityName=".MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"></activity>
-        <activity android:name=".Tools.Tuner.TunerActivity"></activity>
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <activity android:name=".Tools.Tuner.TunerActivity" />
+        <activity android:name=".Tools.Game.GameActivity"></activity>
     </application>
 
 </manifest>

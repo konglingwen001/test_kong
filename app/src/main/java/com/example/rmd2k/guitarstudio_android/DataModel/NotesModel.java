@@ -843,6 +843,11 @@ public class NotesModel {
         return guitarNotesWidth;
     }
 
+    public int getSpeed() {
+        String speed = getRootNoteDic().getSpeed();
+        return Integer.parseInt(speed);
+    }
+
     public float getFlatTime() {
 
         float flatTime = 0;
@@ -873,6 +878,12 @@ public class NotesModel {
         flatTimeTotal = flatTime * beatsPerBar;
         return flatTimeTotal;
     }
+
+    public int getFlatNumInOneBar() {
+        String tempo = getRootNoteDic().getFlat();
+        return Integer.parseInt(tempo.split("/")[0]);
+    }
+
 
     public boolean checkBarStateAtBarNo(int barNo) {
         double noteType = 0;
