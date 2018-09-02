@@ -848,6 +848,12 @@ public class NotesModel {
         return Integer.parseInt(speed);
     }
 
+    public String getTotalNoteType() {
+        String tempo = getRootNoteDic().getFlat();
+        String totalNoteType = tempo.split("/")[1];
+        return totalNoteType;
+    }
+
     public float getFlatTime() {
 
         float flatTime = 0;
