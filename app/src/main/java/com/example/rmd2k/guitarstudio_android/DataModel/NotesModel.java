@@ -101,10 +101,10 @@ public class NotesModel {
         return (int) (dipValue * scale + 0.5f);
     }
 
-    public float getNoteSize() {
+    public int getNoteSize() {
         return dp2px(NOTE_SIZE);
     }
-    public float getLineWidth() {
+    public int getLineWidth() {
         return dp2px(LINE_WIDTH);
     }
     public float getMinimWidth() {

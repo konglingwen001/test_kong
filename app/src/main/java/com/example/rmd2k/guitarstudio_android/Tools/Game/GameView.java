@@ -2,25 +2,31 @@ package com.example.rmd2k.guitarstudio_android.Tools.Game;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-import com.example.rmd2k.guitarstudio_android.DataModel.BarNoData;
 import com.example.rmd2k.guitarstudio_android.DataModel.GuitarNotes;
 import com.example.rmd2k.guitarstudio_android.DataModel.Note;
 import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 
 
-public class GameView extends View {
+public class GameView extends RelativeLayout {
+
+    private static final int NOTE_VIEW_NUM = 50;
 
     Context mContext;
 
@@ -32,6 +38,8 @@ public class GameView extends View {
 
     NotesModel notesModel;
     GuitarNotes rootDir;
+
+    boolean isInitialized = false;
 
     int speed;                      // 每分钟节拍数
     int flatNumInOneBar;            // 一个小节中的节拍数
@@ -45,14 +53,17 @@ public class GameView extends View {
     int quaverWidth;                // 八分音符长度
     int demiQuaverWidth;            // 十六分音符长度
 
+    int noteStartX = 0;             // 音符开始X坐标
+
     ArrayList<NoteView> noteViews;
     int lastNoteNo = -1;
+    int lastBarNo = -1;
 
-    float barStartY;                // 六线谱开始Y坐标
-    float offsetY;                  // 六线谱间隔
+    int barStartY;                  // 六线谱开始Y坐标
+    int offsetY;                    // 六线谱间隔
 
     float[] points_stringLine = new float[24];
-    float[] points_barLine;
+    int[] points_barLine;
 
     public GameView(Context context) {
         super(context);
@@ -70,13 +81,40 @@ public class GameView extends View {
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
 
+        if (!isInitialized) {
+            isInitialized = true;
+            int height = getHeight();
+            Log.e("AAA", "onLayout height:" + height);
 
+            barStartY = notesModel.getLineWidth();
+            offsetY = height / 7;
+
+            for (int i = 0; i < 6; i++) {
+                points_stringLine[i * 4] = 0;
+                points_stringLine[1 + i * 4] = barStartY + offsetY * (i + 1);
+                points_stringLine[2 + i * 4] = screen_width;
+                points_stringLine[3 + i * 4] = barStartY + offsetY * (i + 1);
+            }
+
+            points_barLine = new int[barLineNum * 2 * 4];
+            for (int i = 0; i < barLineNum; i++) {
+                points_barLine[4 * i] = screen_width + barWidth * i;
+                points_barLine[1 + 4 * i] = barStartY + offsetY;
+                points_barLine[2 + 4 * i] = screen_width + barWidth * i;
+                points_barLine[3 + 4 * i] = barStartY + offsetY * 6;
+            }
+        }
     }
 
     private void init(Context context) {
+
+        Log.e("AAA", "init");
+
+        setWillNotDraw(false);
+
         mContext = context;
         notesModel = NotesModel.getInstance(mContext);
         notesModel.getGuitarNotesFromGuitarNotesTitle("天空之城");
@@ -97,7 +135,7 @@ public class GameView extends View {
         double timePerBar = timePerFlat * flatNumInOneBar;
         int refreshTimes = (int)(timePerBar / refreshFrequency);
 
-        barWidth = 800;
+        barWidth = 1600;
         flatWidth = barWidth / flatNumInOneBar;
         minimWidth = getNoteWidth(NotesModel.TYPE_MINIM);
         crotchetaWidth = getNoteWidth(NotesModel.TYPE_CROTCHET);
@@ -110,22 +148,17 @@ public class GameView extends View {
         barLineNum = screen_width / barWidth + 1;
         maxBarIndex = barLineNum - 1;
 
-        barStartY = notesModel.getLineWidth();
-        offsetY = (int)(notesModel.getLineWidth() * 1.5);
+        initNoteViews();
+    }
 
-        for (int i = 0; i < 6; i++) {
-            points_stringLine[    i * 4] = 0;
-            points_stringLine[1 + i * 4] = barStartY + offsetY * i;
-            points_stringLine[2 + i * 4] = screen_width;
-            points_stringLine[3 + i * 4] = barStartY + offsetY * i;
-        }
-
-        points_barLine = new float[barLineNum * 2 * 4];
-        for (int i = 0; i < barLineNum; i++) {
-            points_barLine[    4 * i] = screen_width + barWidth * i;
-            points_barLine[1 + 4 * i] = barStartY;
-            points_barLine[2 + 4 * i] = screen_width + barWidth * i;
-            points_barLine[3 + 4 * i] = barStartY + offsetY * 5;
+    private void initNoteViews() {
+        for (int i = 0; i < NOTE_VIEW_NUM; i++) {
+            NoteView noteView = new NoteView(mContext);
+            noteView.isAttachedToNote = false;
+            noteView.isVisible = false;
+            noteView.isAddedToView = false;
+            noteView.setBackgroundColor(getThemeBackgroundColor());
+            noteViews.add(noteView);
         }
     }
 
@@ -135,6 +168,15 @@ public class GameView extends View {
         noteWidth = (int)(flatWidth * Double.parseDouble(totalNoteType) / Double.parseDouble(type));
         return noteWidth;
 
+    }
+
+    private int getThemeBackgroundColor() {
+        TypedArray array = mContext.getTheme().obtainStyledAttributes(new int[] {
+                android.R.attr.colorBackground,
+                android.R.attr.textColorPrimary,
+        });
+        int backgroundColor = array.getColor(0, 0xFF00FF);
+        return backgroundColor;
     }
 
     @Override
@@ -152,38 +194,112 @@ public class GameView extends View {
 
     }
 
+    int currNoteOffset = 0;
+    int currNoteNo = 0;
+    NoteNoData noteNoData;
     private void drawNotes(Canvas canvas, Paint mPaint) {
         int currBarNo = totalRefreshLength / barWidth;
-        int currNoteNo = 0;
         int offset_barlength = totalRefreshLength % barWidth;
-        int currNoteOffset = 0;
-        ArrayList<NoteNoData> noteNoDataArrayList = notesModel.getNoteNoArray(currBarNo);
-        for (int i = 0; i < noteNoDataArrayList.size(); i++) {
-            NoteNoData noteNoData = noteNoDataArrayList.get(i);
+
+        if (currBarNo > lastBarNo) {
+            // barNo变更
+            lastBarNo = currBarNo;
+
+            // 添加第一个note
+            noteNoData = notesModel.getNoteNoData(currBarNo, 0);
+            currNoteOffset = getCurrNoteOffset(noteNoData.getNoteType());
+            addNotes(currBarNo, 0);
+
+            lastNoteNo = 0;
+            currNoteNo = 1;
+        } else if (offset_barlength > currNoteOffset) {
+            // 判断当前移动的距离是否经过新的note
+            noteNoData = notesModel.getNoteNoData(currBarNo, currNoteNo);
             currNoteOffset += getCurrNoteOffset(noteNoData.getNoteType());
-            if (currNoteOffset > offset_barlength) {
-                currBarNo = i;
-                if (currNoteNo != lastNoteNo) {
-                    lastNoteNo = currNoteNo;
-                    addNotes(currBarNo, currNoteNo);
-                    break;
-                }
-            }
+
+            addNotes(currBarNo, currNoteNo);
+
+            // noteNo变更
+            lastNoteNo = currNoteNo;
+            currNoteNo ++;
         }
 
+        // 显示绑定的note
+        int left;   // 距离左端的距离
+        int top;    // 距离上端的距离
+        for (int i = 0; i < noteViews.size(); i++) {
+            NoteView noteView = noteViews.get(i);
+            if (noteView.isAttachedToNote && !noteView.isAddedToView) {
+                // 当view数组中的view已经与note绑定，并且没有加入到parentView中，加入view，并将isVisible设为true
+                addView(noteView);
+                noteView.isAddedToView = true;
+                noteView.isVisible = true;
+            }
+            if (noteView.isVisible) {
+                if (noteView.stringNo == -1) {
+                    // 音符为休止符，不描画
+                    noteView.isRestNote = true;
+                    continue;
+                }
+
+                LayoutParams lp = (LayoutParams) noteView.getLayoutParams();
+                top = (int) (points_stringLine[1 + (noteView.stringNo - 1) * 4] - noteView.height / 2);
+                noteView.startX -= lengthPerRefresh;
+                if (noteView.startX + noteView.width < 0) {
+                    // 当noteView完全消失时，删除View
+                    noteView.isAttachedToNote = false;
+                    noteView.isVisible = false;
+                    continue;
+                }
+                left = noteView.startX;
+
+                lp.addRule(ALIGN_PARENT_LEFT);
+                lp.leftMargin = left;
+                lp.addRule(ALIGN_PARENT_TOP);
+                lp.topMargin = top;
+                lp.width = noteView.width;
+                lp.height = noteView.height;
+                noteView.setLayoutParams(lp);
+
+            }
+        }
     }
 
     private void addNotes(int currBarNo, int currNoteNo) {
         NoteNoData noteNoData = notesModel.getNoteNoData(currBarNo, currNoteNo);
         ArrayList<Note> notes = notesModel.getNotesArray(currBarNo, currNoteNo);
         for (Note note : notes) {
-            NoteView noteView = new NoteView(mContext);
-            noteView.isVisible = true;
-            noteView.noteType = noteNoData.getNoteType();
-            noteView.fretNo = note.getFretNo();
+            boolean isAttached = false;
+            for (NoteView noteView : noteViews) {
+                if (!noteView.isAttachedToNote && noteView.isAddedToView) {
+                    noteView.isAttachedToNote = true;
+                    noteView.isVisible = true;
+                    noteView.noteType = noteNoData.getNoteType();
+                    noteView.fretNo = note.getFretNo();
+                    noteView.stringNo = Integer.parseInt(note.getStringNo());
 
-            // TODO
-            noteViews.add(noteView);
+                    noteView.width = getCurrNoteOffset(noteNoData.getNoteType());
+                    noteView.height = offsetY;
+                    noteView.startX = screen_width;
+                    isAttached = true;
+                    break;
+                }
+            }
+            if (!isAttached) {
+                for (NoteView noteView : noteViews) {
+                    if (!noteView.isAttachedToNote) {
+                        noteView.isAttachedToNote = true;
+                        noteView.noteType = noteNoData.getNoteType();
+                        noteView.fretNo = note.getFretNo();
+                        noteView.stringNo = Integer.parseInt(note.getStringNo());
+
+                        noteView.width = getCurrNoteOffset(noteNoData.getNoteType());
+                        noteView.height = offsetY;
+                        noteView.startX = screen_width;
+                        break;
+                    }
+                }
+            }
         }
     }
 
