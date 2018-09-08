@@ -15,6 +15,7 @@ public class NoteView extends View {
     private static final int CORNER_SIZE = 40;
 
     private Paint mPaint;
+    private Paint mTextPaint;
 
     boolean isAttachedToNote = false;
     boolean isVisible = false;
@@ -43,6 +44,7 @@ public class NoteView extends View {
     private void init(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 
         mPaint = new Paint();
+        mTextPaint = new Paint(Paint.FAKE_BOLD_TEXT_FLAG);
     }
 
     @Override
@@ -52,9 +54,9 @@ public class NoteView extends View {
         RectF rec = new RectF(0, 0, width, height);
         canvas.drawRoundRect(rec, CORNER_SIZE, CORNER_SIZE, mPaint);
 
-        mPaint.setColor(Color.RED);
-        mPaint.setTextSize(40);
-        mPaint.setStrokeWidth(3);
-        canvas.drawText(fretNo, 0, 0, mPaint);
+        mTextPaint.setColor(Color.RED);
+        mTextPaint.setTextSize(100);
+        mTextPaint.setStrokeWidth(3);
+        canvas.drawText(fretNo, getPaddingLeft(), height, mTextPaint);
     }
 }

@@ -266,41 +266,41 @@ public class GameView extends RelativeLayout {
     }
 
     private void addNotes(int currBarNo, int currNoteNo) {
-        NoteNoData noteNoData = notesModel.getNoteNoData(currBarNo, currNoteNo);
+        NoteNoData currNoteNoData = notesModel.getNoteNoData(currBarNo, currNoteNo);
         ArrayList<Note> notes = notesModel.getNotesArray(currBarNo, currNoteNo);
         for (Note note : notes) {
             boolean isAttached = false;
             for (NoteView noteView : noteViews) {
                 if (!noteView.isAttachedToNote && noteView.isAddedToView) {
-                    noteView.isAttachedToNote = true;
-                    noteView.isVisible = true;
-                    noteView.noteType = noteNoData.getNoteType();
-                    noteView.fretNo = note.getFretNo();
-                    noteView.stringNo = Integer.parseInt(note.getStringNo());
-
-                    noteView.width = getCurrNoteOffset(noteNoData.getNoteType());
-                    noteView.height = offsetY;
-                    noteView.startX = screen_width;
+                    // view没有绑定note并且已经加入界面(也就是显示已经加入过界面但是超过显示区域不显示的view，不用重新加入界面)
+                    attachViewToNote(noteView, currNoteNoData, note);
                     isAttached = true;
                     break;
                 }
             }
             if (!isAttached) {
                 for (NoteView noteView : noteViews) {
-                    if (!noteView.isAttachedToNote) {
-                        noteView.isAttachedToNote = true;
-                        noteView.noteType = noteNoData.getNoteType();
-                        noteView.fretNo = note.getFretNo();
-                        noteView.stringNo = Integer.parseInt(note.getStringNo());
-
-                        noteView.width = getCurrNoteOffset(noteNoData.getNoteType());
-                        noteView.height = offsetY;
-                        noteView.startX = screen_width;
+                    if (!noteView.isAttachedToNote && !noteView.isAddedToView) {
+                        // view没有绑定note并且没有加入界面
+                        attachViewToNote(noteView, currNoteNoData, note);
                         break;
                     }
                 }
             }
         }
+    }
+
+    private void attachViewToNote(NoteView noteView, NoteNoData currNoteNoData, Note note) {
+        noteView.isAttachedToNote = true;
+        noteView.isVisible = true;
+        noteView.noteType = currNoteNoData.getNoteType();
+        noteView.fretNo = note.getFretNo();
+        noteView.stringNo = Integer.parseInt(note.getStringNo());
+
+        noteView.width = getCurrNoteOffset(currNoteNoData.getNoteType());
+        noteView.height = offsetY;
+        noteView.startX = screen_width;
+
     }
 
     private int getCurrNoteOffset(String type) {
