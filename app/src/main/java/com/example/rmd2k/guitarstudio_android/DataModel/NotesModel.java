@@ -2,7 +2,11 @@ package com.example.rmd2k.guitarstudio_android.DataModel;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
+import android.net.Uri;
 import android.util.Log;
 import android.util.Xml;
 import android.view.WindowManager;
@@ -11,6 +15,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -312,7 +317,7 @@ public class NotesModel {
         try {
             String[] files = manager.list("");
             for (int i = 0; i < files.length; i++) {
-                if (files[i].endsWith(".plist")) {
+                if (files[i].endsWith(".plist") || files[i].endsWith(".ogg")) {
                     fos = activity.openFileOutput(files[i], Context.MODE_PRIVATE);
                     is = manager.open(files[i]);
 
@@ -356,6 +361,80 @@ public class NotesModel {
         }
         return rootNoteDic;
 
+    }
+
+    private String currFolder = "";
+    private ArrayList<String> lstFiles = new ArrayList<>();
+    private SoundPool soundPool;
+    private ArrayList<Integer> mArr = new ArrayList<>();
+    private boolean isOggFilesInited = false;
+    private boolean isSoundPoolInited = false;
+
+    public ArrayList<String> getOggFiles() {
+        return lstFiles;
+    }
+
+    private void initNotePlayer() {
+
+        initSoundPool();
+
+        if (!isOggFilesInited) {
+            initOggFileList("main");
+        }
+
+        loadSoundPool();
+
+        isSoundPoolInited = true;
+    }
+
+    public void initOggFileList(String folder) {
+        currFolder = folder;
+        try {
+            String[] files = mContext.getResources().getAssets().list(currFolder);
+            for (String file : files) {
+                if (file.endsWith("ogg")) {
+                    lstFiles.add(file);
+                }
+            }
+            isOggFilesInited = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initSoundPool() {
+        SoundPool.Builder builder = new SoundPool.Builder();
+        builder.setMaxStreams(24);
+        AudioAttributes attributes = new AudioAttributes.Builder().
+                setLegacyStreamType(AudioAttributes.CONTENT_TYPE_UNKNOWN).
+                build();
+        builder.setAudioAttributes(attributes);
+        soundPool = builder.build();
+    }
+
+    private void loadSoundPool() {
+        int soundId;
+        for (int i = 1; i <= lstFiles.size(); i++) {
+            soundId = soundPool.load(getOggPath(lstFiles.get(i - 1)), 1);
+            mArr.add(soundId);
+        }
+    }
+
+    private AssetFileDescriptor getOggPath(String name) {
+        AssetFileDescriptor fd = null;
+        try {
+            fd = mContext.getAssets().openFd(currFolder + "/" + name);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fd;
+    }
+
+    public void playNote(int index) {
+        if (!isSoundPoolInited) {
+            initNotePlayer();
+        }
+        soundPool.play(mArr.get(index), 1, 1, 1, 0, 1);
     }
 
     private void loadGuitarNotes(String guitarNoteName) {

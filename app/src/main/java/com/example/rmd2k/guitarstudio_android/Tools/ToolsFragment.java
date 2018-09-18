@@ -1,31 +1,30 @@
 package com.example.rmd2k.guitarstudio_android.Tools;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
+import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.R;
 import com.example.rmd2k.guitarstudio_android.Tools.Game.GameActivity;
+import com.example.rmd2k.guitarstudio_android.Tools.PlayOgg.PlayOggActivity;
 import com.example.rmd2k.guitarstudio_android.Tools.Tuner.TunerActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ToolsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ToolsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ToolsFragment extends Fragment {
 
     Button btnTuner;
     Button btnGame;
+    Button btnPlayOgg;
+
+    NotesModel notesModel;
 
     public ToolsFragment() {
         // Required empty public constructor
@@ -34,6 +33,7 @@ public class ToolsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        notesModel = NotesModel.getInstance(getContext());
     }
 
     @Override
@@ -47,8 +47,14 @@ public class ToolsFragment extends Fragment {
         btnGame = view.findViewById(R.id.btnGame);
         btnGame.setOnClickListener(onGameClickListener);
 
+
+        btnPlayOgg = view.findViewById(R.id.btnPlayOgg);
+        btnPlayOgg.setOnClickListener(onPlayOggClickListener);
+
         return view;
     }
+
+
 
     View.OnClickListener onTunerClickListener = new View.OnClickListener() {
         @Override
@@ -64,6 +70,15 @@ public class ToolsFragment extends Fragment {
         public void onClick(View v) {
             Intent intent = new Intent();
             intent.setClass(getActivity(), GameActivity.class);
+            startActivity(intent);
+        }
+    };
+
+    View.OnClickListener onPlayOggClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent();
+            intent.setClass(getActivity(), PlayOggActivity.class);
             startActivity(intent);
         }
     };

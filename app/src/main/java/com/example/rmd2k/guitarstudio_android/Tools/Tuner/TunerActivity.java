@@ -1,6 +1,7 @@
 package com.example.rmd2k.guitarstudio_android.Tools.Tuner;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioFormat;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.R;
 
 import java.lang.ref.WeakReference;
@@ -28,7 +30,9 @@ public class TunerActivity extends AppCompatActivity {
     private static final double PI = 3.141592654;
     private static final int PERMISSION_RECORD_AUDIO = 0;
 
+    NotesModel notesModel;
     TunerUtils tunerUtils;
+    Context mContext;
 
     InstrumentPanelView instrumentPanelView;
     TextView tvCurrNote;
@@ -54,6 +58,9 @@ public class TunerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tuner);
+
+        mContext = getApplicationContext();
+        notesModel = NotesModel.getInstance(mContext);
 
         initView();
 
@@ -175,6 +182,8 @@ public class TunerActivity extends AppCompatActivity {
     public void selectTunerNote(View view) {
 
         int stringNo = Integer.parseInt(view.getTag().toString());
+
+        notesModel.playNote(stringNo);
 
         setSelected(stringNo);
 

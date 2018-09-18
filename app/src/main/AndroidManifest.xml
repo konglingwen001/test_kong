@@ -29,7 +29,8 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity android:name=".Tools.Tuner.TunerActivity" />
-        <activity android:name=".Tools.Game.GameActivity"></activity>
+        <activity android:name=".Tools.Game.GameActivity" />
+        <activity android:name=".Tools.PlayOgg.PlayOggActivity"></activity>
     </application>
 
 </manifest>

@@ -24,4 +24,15 @@
         android:text="Game"
         app:layout_constraintStart_toEndOf="@+id/btnTuner"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnPlayOgg"
+        android:layout_width="97dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="PlayOGG"
+        app:layout_constraintStart_toEndOf="@+id/btnGame"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
