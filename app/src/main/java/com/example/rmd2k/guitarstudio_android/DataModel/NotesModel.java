@@ -369,6 +369,7 @@ public class NotesModel {
     private ArrayList<Integer> mArr = new ArrayList<>();
     private boolean isOggFilesInited = false;
     private boolean isSoundPoolInited = false;
+    private int[] startNote = {1, 6, 11, 16, 20, 25};
 
     public ArrayList<String> getOggFiles() {
         return lstFiles;
@@ -388,18 +389,25 @@ public class NotesModel {
     }
 
     public void initOggFileList(String folder) {
-        currFolder = folder;
-        try {
-            String[] files = mContext.getResources().getAssets().list(currFolder);
-            for (String file : files) {
-                if (file.endsWith("ogg")) {
-                    lstFiles.add(file);
-                }
-            }
-            isOggFilesInited = true;
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (int i = 0; i < 44; i++) {
+            lstFiles.add(i + ".ogg");
         }
+        isOggFilesInited = true;
+//        currFolder = folder;
+//        try {
+//            String[] files = mContext.getResources().getAssets().list(currFolder);
+//            for (String file : files) {
+//                if (file.endsWith("ogg")) {
+//                    lstFiles.add(file);
+//                }
+//            }
+//            for (int i = 0; i < 44; i++) {
+//                lstFiles.add(i + ".ogg");
+//            }
+//            isOggFilesInited = true;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void initSoundPool() {
@@ -435,6 +443,13 @@ public class NotesModel {
             initNotePlayer();
         }
         soundPool.play(mArr.get(index), 1, 1, 1, 0, 1);
+    }
+
+    public void playNote(int stringNo, int fretNo) {
+        int soundId;
+        int position = startNote[stringNo - 1] + fretNo;
+        soundId = mArr.get(position);
+        soundPool.play(soundId, 1, 1, 1, 0, 1);
     }
 
     private void loadGuitarNotes(String guitarNoteName) {

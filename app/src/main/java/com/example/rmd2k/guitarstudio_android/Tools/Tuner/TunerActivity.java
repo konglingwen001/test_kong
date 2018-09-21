@@ -183,7 +183,7 @@ public class TunerActivity extends AppCompatActivity {
 
         int stringNo = Integer.parseInt(view.getTag().toString());
 
-        notesModel.playNote(stringNo);
+        notesModel.playNote(stringNo, 0);
 
         setSelected(stringNo);
 
