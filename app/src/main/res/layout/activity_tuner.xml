@@ -15,16 +15,15 @@
         app:layout_constraintTop_toBottomOf="@+id/tvCurrNote" />
 
     <Button
-        android:id="@+id/btnD"
+        android:id="@+id/btnE"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="32dp"
         android:onClick="selectTunerNote"
-        android:tag="4"
-        android:text="D"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/instrumentPanelView" />
+        android:tag="6"
+        android:text="E"
+        app:layout_constraintEnd_toEndOf="@+id/btnD"
+        app:layout_constraintTop_toBottomOf="@+id/btnA" />
 
     <Button
         android:id="@+id/btnA"
@@ -38,24 +37,25 @@
         app:layout_constraintTop_toBottomOf="@+id/btnD" />
 
     <Button
-        android:id="@+id/btnE"
+        android:id="@+id/btnD"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="50dp"
         android:onClick="selectTunerNote"
-        android:tag="6"
-        android:text="E"
-        app:layout_constraintEnd_toEndOf="@+id/btnD"
-        app:layout_constraintTop_toBottomOf="@+id/btnA" />
+        android:tag="4"
+        android:text="D"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/instrumentPanelView" />
 
     <Button
-        android:id="@+id/btnE1"
+        android:id="@+id/btnG"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:onClick="selectTunerNote"
-        android:tag="1"
-        android:text="E"
+        android:tag="3"
+        android:text="G"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/btnD" />
 
@@ -66,17 +66,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="B"
-        app:layout_constraintStart_toStartOf="@+id/btnE1"
+        app:layout_constraintStart_toStartOf="@+id/btnG"
         app:layout_constraintTop_toTopOf="@+id/btnA" />
 
     <Button
-        android:id="@+id/btnG"
+        android:id="@+id/btnE1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="selectTunerNote"
-        android:tag="3"
-        android:text="G"
-        app:layout_constraintStart_toStartOf="@+id/btnE1"
+        android:tag="1"
+        android:text="E"
+        app:layout_constraintStart_toStartOf="@+id/btnG"
         app:layout_constraintTop_toTopOf="@+id/btnE" />
 
     <android.support.constraint.Guideline
@@ -94,7 +94,7 @@
         android:layout_marginTop="32dp"
         android:text="Auto"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnG" />
+        app:layout_constraintTop_toBottomOf="@+id/btnE1" />
 
     <TextView
         android:id="@+id/tvCurrNote"

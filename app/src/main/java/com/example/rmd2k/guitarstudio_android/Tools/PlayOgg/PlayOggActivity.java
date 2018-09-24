@@ -14,10 +14,12 @@ import android.widget.TextView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.R;
+import com.example.rmd2k.guitarstudio_android.Utils.NotePlayUtils;
 
 public class PlayOggActivity extends AppCompatActivity {
 
     NotesModel notesModel;
+    NotePlayUtils notePlayUtils;
     ListView lstOggFiles;
     Button btnStop;
 
@@ -29,7 +31,8 @@ public class PlayOggActivity extends AppCompatActivity {
         setContentView(R.layout.activity_play_ogg);
 
         notesModel = NotesModel.getInstance(getApplicationContext());
-        notesModel.initOggFileList("main");
+        notePlayUtils = NotePlayUtils.getInstance(getApplicationContext());
+        notePlayUtils.initOggFileList("main");
 
         mInflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -39,7 +42,7 @@ public class PlayOggActivity extends AppCompatActivity {
         lstOggFiles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                notesModel.playNote(position);
+                notePlayUtils.playNote(position);
             }
         });
 
@@ -56,12 +59,12 @@ public class PlayOggActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return notesModel.getOggFiles().size();
+            return notePlayUtils.getOggFiles().size();
         }
 
         @Override
         public Object getItem(int position) {
-            return notesModel.getOggFiles().get(position);
+            return notePlayUtils.getOggFiles().get(position);
         }
 
         @Override
@@ -76,7 +79,7 @@ public class PlayOggActivity extends AppCompatActivity {
             }
             TextView tvFileName = convertView.findViewById(android.R.id.text1);
             tvFileName.setTextColor(Color.WHITE);
-            tvFileName.setText(notesModel.getOggFiles().get(position));
+            tvFileName.setText(notePlayUtils.getOggFiles().get(position));
             return convertView;
         }
     }

@@ -1,4 +1,4 @@
-package com.example.rmd2k.guitarstudio_android.Tools.Tuner;
+package com.example.rmd2k.guitarstudio_android.Utils;
 
 import android.util.Log;
 

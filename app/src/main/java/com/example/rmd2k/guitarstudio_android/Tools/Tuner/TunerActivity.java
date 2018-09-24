@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
 import com.example.rmd2k.guitarstudio_android.R;
+import com.example.rmd2k.guitarstudio_android.Utils.NotePlayUtils;
+import com.example.rmd2k.guitarstudio_android.Utils.TunerUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -31,6 +33,7 @@ public class TunerActivity extends AppCompatActivity {
     private static final int PERMISSION_RECORD_AUDIO = 0;
 
     NotesModel notesModel;
+    NotePlayUtils notePlayUtils;
     TunerUtils tunerUtils;
     Context mContext;
 
@@ -61,6 +64,7 @@ public class TunerActivity extends AppCompatActivity {
 
         mContext = getApplicationContext();
         notesModel = NotesModel.getInstance(mContext);
+        notePlayUtils = NotePlayUtils.getInstance(mContext);
 
         initView();
 
@@ -183,7 +187,7 @@ public class TunerActivity extends AppCompatActivity {
 
         int stringNo = Integer.parseInt(view.getTag().toString());
 
-        notesModel.playNote(stringNo, 0);
+        notePlayUtils.playNote(stringNo, 0);
 
         setSelected(stringNo);
 

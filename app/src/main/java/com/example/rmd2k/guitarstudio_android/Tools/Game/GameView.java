@@ -20,6 +20,7 @@ import com.example.rmd2k.guitarstudio_android.DataModel.GuitarNotes;
 import com.example.rmd2k.guitarstudio_android.DataModel.Note;
 import com.example.rmd2k.guitarstudio_android.DataModel.NoteNoData;
 import com.example.rmd2k.guitarstudio_android.DataModel.NotesModel;
+import com.example.rmd2k.guitarstudio_android.Utils.NotePlayUtils;
 
 import java.util.ArrayList;
 
@@ -29,6 +30,7 @@ public class GameView extends RelativeLayout {
     private static final int NOTE_VIEW_NUM = 50;
 
     Context mContext;
+    NotePlayUtils notePlayUtils;
 
     int screen_width;               // 屏幕宽度
     int screen_height;              // 屏幕高度
@@ -112,6 +114,7 @@ public class GameView extends RelativeLayout {
     private void init(Context context) {
 
         Log.e("AAA", "init");
+        notePlayUtils = NotePlayUtils.getInstance(context);
 
         setWillNotDraw(false);
 
@@ -236,14 +239,8 @@ public class GameView extends RelativeLayout {
                 noteView.isVisible = true;
             }
             if (noteView.isVisible) {
-                if (noteView.stringNo == -1) {
-                    // 音符为休止符，不描画
-                    noteView.isRestNote = true;
-                    continue;
-                }
 
                 LayoutParams lp = (LayoutParams) noteView.getLayoutParams();
-                top = (int) (points_stringLine[1 + (noteView.stringNo - 1) * 4] - noteView.height / 2);
                 noteView.startX -= lengthPerRefresh;
                 if (noteView.startX + noteView.width < 0) {
                     // 当noteView完全消失时，删除View
@@ -252,6 +249,13 @@ public class GameView extends RelativeLayout {
                     continue;
                 }
                 left = noteView.startX;
+
+                // 音符为休止符时，不描画
+                if (noteView.stringNo == -1) {
+                    top = 0;
+                } else {
+                    top = (int) (points_stringLine[1 + (noteView.stringNo - 1) * 4] - noteView.height / 2);
+                }
 
                 lp.addRule(ALIGN_PARENT_LEFT);
                 lp.leftMargin = left;
@@ -291,6 +295,15 @@ public class GameView extends RelativeLayout {
     }
 
     private void attachViewToNote(NoteView noteView, NoteNoData currNoteNoData, Note note) {
+
+        int stringNo = Integer.parseInt(note.getStringNo());
+        int fretNo = Integer.parseInt(note.getFretNo());
+        if (stringNo > 0) {
+            //notePlayUtils.playNote(stringNo, fretNo);
+        } else {
+            //notePlayUtils.stopPlay();
+        }
+
         noteView.isAttachedToNote = true;
         noteView.isVisible = true;
         noteView.noteType = currNoteNoData.getNoteType();
@@ -298,7 +311,11 @@ public class GameView extends RelativeLayout {
         noteView.stringNo = Integer.parseInt(note.getStringNo());
 
         noteView.width = getCurrNoteOffset(currNoteNoData.getNoteType());
-        noteView.height = offsetY;
+        if (stringNo == -1) {
+            noteView.height = 0;
+        } else {
+            noteView.height = offsetY;
+        }
         noteView.startX = screen_width;
 
     }
